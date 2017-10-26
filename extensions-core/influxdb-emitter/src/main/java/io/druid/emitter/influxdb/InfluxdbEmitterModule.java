@@ -1,7 +1,5 @@
 package io.druid.emitter.influxdb;
 
-//not sure which imports will be needed - taken all from AmbariMetricsEmitterModule
-
 import com.fasterxml.jackson.databind.Module;
 import com.google.inject.Binder;
 import io.druid.guice.JsonConfigProvider;
@@ -26,15 +24,14 @@ public class InfluxdbEmitterModule implements DruidModule{
 
     public void configure(Binder binder) {
         JsonConfigProvider.bind(binder, "druid.emitter." + EMITTER_TYPE, InfluxdbEmitterConfig.class);
-        //System.out.println("hello world from emitter class");
         log.info("hello world from emitter module");
     }
 
     @Provides
     @ManageLifecycle
     @Named(EMITTER_TYPE)
-    public Emitter getEmitter(InfluxdbEmitterConfig config, ObjectMapper mapper)
+    public Emitter getEmitter(InfluxdbEmitterConfig influxdbEmitterConfig, ObjectMapper mapper)
     {
-        return new InfluxdbEmitter();
+        return new InfluxdbEmitter(influxdbEmitterConfig);
     }
 }
