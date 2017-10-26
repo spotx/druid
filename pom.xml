@@ -98,7 +98,6 @@
         <module>hll</module>
         <!-- Core extensions -->
         <module>extensions-core/avro-extensions</module>
-        <module>extensions-core/influxdb-emitter</module>
         <module>extensions-core/caffeine-cache</module>
         <module>extensions-core/datasketches</module>
         <module>extensions-core/druid-kerberos</module>
@@ -114,6 +113,7 @@
         <module>extensions-core/lookups-cached-global</module>
         <module>extensions-core/lookups-cached-single</module>
         <module>extensions-core/s3-extensions</module>
+        <module>extensions-spotx/influxdb-emitter</module>
         <!-- Community extensions -->
         <module>extensions-contrib/azure-extensions</module>
         <module>extensions-contrib/cassandra-storage</module>
