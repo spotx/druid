@@ -1,0 +1,172 @@
+package io.druid.emitter.influxdb;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.metamx.emitter.core.Emitter;
+import com.metamx.emitter.core.Event;
+import com.metamx.emitter.service.ServiceMetricEvent;
+import java.io.IOException;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import io.druid.java.util.common.logger.Logger;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+public class InfluxdbEmitter implements Emitter {
+
+    private final static Logger log = new Logger(InfluxdbEmitter.class);
+    private HttpClient influxdbClient;
+    private final InfluxdbEmitterConfig influxdbEmitterConfig;
+    private final AtomicBoolean started = new AtomicBoolean(false);
+    private final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, new ThreadFactoryBuilder()
+            .setDaemon(true)
+            .setNameFormat("InfluxdbEmitter-%s")
+            .build());
+
+    private final LinkedBlockingQueue<ServiceMetricEvent> eventsQueue;
+
+    public InfluxdbEmitter(InfluxdbEmitterConfig influxdbEmitterConfig) {
+        this.influxdbEmitterConfig = influxdbEmitterConfig;
+        this.influxdbClient = HttpClientBuilder.create().build();
+        this.eventsQueue = new LinkedBlockingQueue(influxdbEmitterConfig.getMaxQueueSize());
+        log.info("constructing influxdb emitter");
+
+    }
+
+    public void start() {
+        synchronized (started) {
+            if (!started.get()) {
+                exec.scheduleAtFixedRate(
+                    new ConsumerRunnable(),
+                    influxdbEmitterConfig.getFlushDelay(),
+                    influxdbEmitterConfig.getFlushPeriod(),
+                    TimeUnit.MILLISECONDS
+                );
+                started.set(true);
+            }
+        }
+    }
+
+    public void emit(Event event) {
+        if (event instanceof ServiceMetricEvent)
+        {
+            ServiceMetricEvent metricEvent = (ServiceMetricEvent) event;
+            try {
+                eventsQueue.put(metricEvent);
+            } catch (InterruptedException exception){
+                log.error(exception.toString());
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public void reset() {
+        
+    }
+
+    public void postToInflux(String payload){
+        HttpPost post = new HttpPost(
+                "http://" + influxdbEmitterConfig.getHostname()
+                 + ":" + influxdbEmitterConfig.getPort()
+                 + "/write?db=" + influxdbEmitterConfig.getDatabaseName()
+        );
+
+        post.setEntity(new StringEntity(payload, ContentType.DEFAULT_TEXT));
+        post.setHeader("Content-Type","application/x-www-form-urlencoded");
+
+        try {
+            influxdbClient.execute(post);
+        } catch(IOException ex) {
+            log.info("request failed", ex.getMessage());
+        } finally {
+            post.releaseConnection();
+        }
+    }
+
+    public String transformForInflux(ServiceMetricEvent event)
+    {
+        String payload = getValue(influxdbEmitterConfig.getMeasurement(), event);
+        if (influxdbEmitterConfig.getTags().size() == 0) {
+            payload += " ";
+        } else {
+            String tagBuilder = ",";
+            for (int i = 0; i < influxdbEmitterConfig.getTags().size()-1; i++){
+                String tag = influxdbEmitterConfig.getTags().get(i);
+                tagBuilder += tag + "=" + getValue(tag, event) + ",";
+            }
+            String lastTag = influxdbEmitterConfig.getTags().get(influxdbEmitterConfig.getTags().size()-1);
+            tagBuilder +=  lastTag + "=" + getValue(lastTag, event) + " ";
+            payload += tagBuilder;
+        }
+
+        //generates the list of fields and field-values then appends to payload
+        String fieldBuilder = "";
+        for (int i = 0; i < influxdbEmitterConfig.getFields().size()-1; i++){
+            String field = influxdbEmitterConfig.getFields().get(i);
+            fieldBuilder += field + "=" + getValue(field, event) + ",";
+        }
+        String lastField = influxdbEmitterConfig.getFields().get(influxdbEmitterConfig.getFields().size()-1);
+        fieldBuilder +=  lastField + "=" + getValue(lastField, event);
+        payload += fieldBuilder + " " + event.getCreatedTime().getMillis() * 1000000 + '\n';
+
+
+        return payload;
+    }
+
+    public String getValue(String key, ServiceMetricEvent event) {
+        switch (key){
+            case "service":
+                return event.getService();
+            case "eventType":
+                return event.getClass().getSimpleName();
+            case "metric":
+                return event.getMetric();
+            case "feed":
+                return event.getFeed();
+            case "host":
+                return event.getHost();
+            case "value":
+                return event.getValue().toString();
+            default:
+                return key;
+        }
+    }
+
+    public void flush() throws IOException {
+        if (started.get()) {
+            Future future = exec.schedule(new ConsumerRunnable(), 0, TimeUnit.MILLISECONDS);
+            log.info("posting current queue to influxdb");
+            try {
+                future.get(5000, TimeUnit.MILLISECONDS);
+            }
+            catch (InterruptedException | ExecutionException | TimeoutException e) {
+                if (e instanceof InterruptedException) {
+                    throw new RuntimeException("interrupted flushing elements from queue", e);
+                }
+                log.error(e, e.getMessage());
+            }
+        }
+    }
+
+    public void close() throws IOException {
+        flush();
+        log.info("Closing emitter io.druid.emitter.influxdb.InfluxdbEmitter");
+        started.set(false);
+        exec.shutdown();
+    }
+
+    public class ConsumerRunnable implements Runnable{
+        @Override
+        public void run() {
+            String payload = "";
+            int initialQueueSize = eventsQueue.size();
+            for (int i =0; i < initialQueueSize; i++) {
+                payload += transformForInflux(eventsQueue.poll());
+            }
+            postToInflux(payload);
+            //= eventsQueue.stream().map(event -> transformForInflux(event)).reduce("\n", String::concat);
+        }
+    }
+}
