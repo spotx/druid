@@ -13,7 +13,6 @@ import io.druid.java.util.common.logger.Logger;
 public class InfluxdbEmitterConfig {
 
     private final static int DEFAULT_PORT = 8086;
-    private final static int DEFAULT_BATCH_SIZE = 500;
     private final static String DEFAULT_FIELD = "value";
     private final static List<String> ACCEPTED_VALUES = Arrays.asList("metric,service,value,feed,host,eventType".split(","));
     private final static int DEFAULT_QUEUE_SIZE = Integer.MAX_VALUE;
@@ -25,8 +24,6 @@ public class InfluxdbEmitterConfig {
     final private Integer port;
     @JsonProperty
     final private String databaseName;
-    @JsonProperty
-    final private Integer batchSize;
     @JsonProperty
     final private Integer maxQueueSize;
     @JsonProperty
@@ -47,7 +44,6 @@ public class InfluxdbEmitterConfig {
     public InfluxdbEmitterConfig(@JsonProperty("hostname") String hostname,
                                  @JsonProperty("port") Integer port,
                                  @JsonProperty("databaseName") String databaseName,
-                                 @JsonProperty("batchSize") Integer batchSize,
                                  @JsonProperty("maxQueueSize") Integer maxQueueSize,
                                  @JsonProperty("measurement") String measurement,
                                  @JsonProperty("tags") String tags,
@@ -58,11 +54,10 @@ public class InfluxdbEmitterConfig {
         this.hostname = Preconditions.checkNotNull(hostname, "hostname can not be null");
         this.port = port == null ? DEFAULT_PORT : port;
         this.databaseName = Preconditions.checkNotNull(databaseName, "databaseName can not be null");
-        this.batchSize = batchSize == null ? DEFAULT_BATCH_SIZE : batchSize;
         this.maxQueueSize = maxQueueSize == null ? DEFAULT_QUEUE_SIZE : maxQueueSize;
         this.measurement = Preconditions.checkNotNull(measurement, "measurement can not be null");
-        this.tags = (ACCEPTED_VALUES.containsAll(Arrays.asList(tags.split(","))) || Arrays.asList(tags.split(",")).size() == 0) ? tags : "";
-        this.fields = (ACCEPTED_VALUES.containsAll(Arrays.asList(fields)) && Arrays.asList(fields.split(",")).size() != 0) ? fields : DEFAULT_FIELD;
+        this.tags = tags == null ?  "" : (ACCEPTED_VALUES.containsAll(Arrays.asList(tags.split(","))) || Arrays.asList(tags.split(",")).size() == 0) ? tags : "";
+        this.fields = (ACCEPTED_VALUES.containsAll(Arrays.asList(fields.split(","))) && Arrays.asList(fields.split(",")).size() != 0) ? fields : DEFAULT_FIELD;
         this.flushPeriod = flushPeriod == null ? DEFAULT_FLUSH_PERIOD : flushPeriod;
         this.flushDelay = flushDelay == null ? DEFAULT_FLUSH_PERIOD : flushDelay;
     }
@@ -87,16 +82,13 @@ public class InfluxdbEmitterConfig {
         if (!getDatabaseName().equals(that.getDatabaseName())) {
             return false;
         }
-        if (getBatchSize() != that.getBatchSize()){
+        if (!getFields().equals(that.getFields())){
             return false;
         }
-        if (getFields() != that.getFields()){
+        if (!getMeasurement().equals(that.getMeasurement())){
             return false;
         }
-        if (getMeasurement() != that.getMeasurement()){
-            return false;
-        }
-        if (getTags() != that.getTags()){
+        if (!getTags().equals(that.getTags())){
             return false;
         }
         if (getFlushPeriod() != that.getFlushPeriod()){
@@ -117,7 +109,6 @@ public class InfluxdbEmitterConfig {
         int result = getHostname().hashCode();
         result = 31 * result + getPort();
         result = 31 * result + getDatabaseName().hashCode();
-        result = 31 * result + getBatchSize();
         result = 31 * result + getMeasurement().hashCode();
         result = 31 * result + getTags().hashCode();
         result = 31 * result + getFields().hashCode();
@@ -140,11 +131,6 @@ public class InfluxdbEmitterConfig {
     @JsonProperty
     public String getDatabaseName() {
         return databaseName;
-    }
-
-    @JsonProperty
-    public int getBatchSize() {
-        return batchSize;
     }
 
     @JsonProperty

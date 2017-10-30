@@ -62,10 +62,6 @@ public class InfluxdbEmitter implements Emitter {
         }
     }
 
-    public void reset() {
-        
-    }
-
     public void postToInflux(String payload){
         HttpPost post = new HttpPost(
                 "http://" + influxdbEmitterConfig.getHostname()
@@ -87,15 +83,20 @@ public class InfluxdbEmitter implements Emitter {
 
     public String transformForInflux(ServiceMetricEvent event)
     {
+        // transforms a service metric event into a String that can be posted to influxdb.
+        // uses the tags,fields and measurement specified in the config file to comply with influxdb's line protocol
+
         String payload = getValue(influxdbEmitterConfig.getMeasurement(), event);
-        if (influxdbEmitterConfig.getTags().size() == 0) {
+
+        if (influxdbEmitterConfig.getTags().size() == 0) { // checking if tags exist. if no then add a space after the measurement
             payload += " ";
-        } else {
+        } else { // else append each tag-value pair to the string separated by commas
             String tagBuilder = ",";
             for (int i = 0; i < influxdbEmitterConfig.getTags().size()-1; i++){
                 String tag = influxdbEmitterConfig.getTags().get(i);
                 tagBuilder += tag + "=" + getValue(tag, event) + ",";
             }
+            // a space instead of a comma must proceed the last tag-value pair
             String lastTag = influxdbEmitterConfig.getTags().get(influxdbEmitterConfig.getTags().size()-1);
             tagBuilder +=  lastTag + "=" + getValue(lastTag, event) + " ";
             payload += tagBuilder;
@@ -107,10 +108,10 @@ public class InfluxdbEmitter implements Emitter {
             String field = influxdbEmitterConfig.getFields().get(i);
             fieldBuilder += field + "=" + getValue(field, event) + ",";
         }
+        // last field-value pair must be proceeded by a space and timestamp
         String lastField = influxdbEmitterConfig.getFields().get(influxdbEmitterConfig.getFields().size()-1);
         fieldBuilder +=  lastField + "=" + getValue(lastField, event);
-        payload += fieldBuilder + " " + event.getCreatedTime().getMillis() * 1000000 + '\n';
-
+        payload += fieldBuilder + " " + event.getCreatedTime().getMillis() * 1000000 + '\n'; // influxdb uses nano-second epoch timestamp
 
         return payload;
     }
@@ -136,17 +137,7 @@ public class InfluxdbEmitter implements Emitter {
 
     public void flush() throws IOException {
         if (started.get()) {
-            Future future = exec.schedule(new ConsumerRunnable(), 0, TimeUnit.MILLISECONDS);
-            log.info("posting current queue to influxdb");
-            try {
-                future.get(5000, TimeUnit.MILLISECONDS);
-            }
-            catch (InterruptedException | ExecutionException | TimeoutException e) {
-                if (e instanceof InterruptedException) {
-                    throw new RuntimeException("interrupted flushing elements from queue", e);
-                }
-                log.error(e, e.getMessage());
-            }
+            transformAndSendToInfluxdb(eventsQueue);
         }
     }
 
@@ -157,16 +148,19 @@ public class InfluxdbEmitter implements Emitter {
         exec.shutdown();
     }
 
-    public class ConsumerRunnable implements Runnable{
+    public void transformAndSendToInfluxdb(LinkedBlockingQueue<ServiceMetricEvent> eventsQueue) {
+        String payload = "";
+        int initialQueueSize = eventsQueue.size();
+        for (int i =0; i < initialQueueSize; i++) {
+            payload += transformForInflux(eventsQueue.poll());
+        }
+        postToInflux(payload);
+    }
+
+    private class ConsumerRunnable implements Runnable{
         @Override
         public void run() {
-            String payload = "";
-            int initialQueueSize = eventsQueue.size();
-            for (int i =0; i < initialQueueSize; i++) {
-                payload += transformForInflux(eventsQueue.poll());
-            }
-            postToInflux(payload);
-            //= eventsQueue.stream().map(event -> transformForInflux(event)).reduce("\n", String::concat);
+            transformAndSendToInfluxdb(eventsQueue);
         }
     }
 }
