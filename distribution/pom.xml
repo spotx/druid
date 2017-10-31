@@ -111,6 +111,8 @@
                                 <argument>io.druid.extensions:druid-stats</argument>
                                 <argument>-c</argument>
                                 <argument>io.druid.extensions:druid-examples</argument>
+                                <argument>-c</argument>
+                                <argument>io.druid.extensions.contrib:druid-parquet-extensions</argument>
                                 <argument>${druid.distribution.pulldeps.opts}</argument>
                             </arguments>
                         </configuration>
