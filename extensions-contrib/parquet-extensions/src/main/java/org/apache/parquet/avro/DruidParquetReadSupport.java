@@ -22,6 +22,8 @@ package org.apache.parquet.avro;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import io.druid.data.input.impl.DimensionSchema;
+import io.druid.data.input.impl.JSONParseSpec;
+import io.druid.data.input.impl.ParseSpec;
 import io.druid.indexer.HadoopDruidIndexerConfig;
 import io.druid.query.aggregation.AggregatorFactory;
 import org.apache.avro.Schema;
@@ -59,10 +61,13 @@ public class DruidParquetReadSupport extends AvroReadSupport<GenericRecord>
       metricsFields.addAll(agg.requiredFields());
     }
 
+    ParseSpec spec =  config.getParser().getParseSpec();
+
     List<Type> partialFields = Lists.newArrayList();
 
     for (Type type : fullSchema.getFields()) {
       if (tsField.equals(type.getName())
+          || spec instanceof JSONParseSpec
           || metricsFields.contains(type.getName())
           || dimensions.size() > 0 && dimensions.contains(type.getName())
           || dimensions.size() == 0) {
