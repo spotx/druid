@@ -33,8 +33,10 @@ public class InfluxdbEmitterConfigTest {
                 "feed,metric,service",
                 "value",
                 15000,
-                30000
-        );
+                30000,
+                "adam",
+                "password"
+                );
     }
 
     @Test
@@ -48,7 +50,9 @@ public class InfluxdbEmitterConfigTest {
                 "eventType,host",
                 "value",
                 15000,
-                30000
+                30000,
+                "adam",
+                "password"
         );
         Assert.assertNotEquals(influxdbEmitterConfig, influxdbEmitterConfigComparison);
     }
@@ -64,7 +68,9 @@ public class InfluxdbEmitterConfigTest {
                 null,
                 "value",
                 15000,
-                30000
+                30000,
+                "adam",
+                "password"
         );
         List<String> expectedTags = Collections.emptyList();
         Assert.assertEquals(influxdbEmitterConfigEmptyTags.getTags(), expectedTags);
@@ -81,7 +87,9 @@ public class InfluxdbEmitterConfigTest {
                 null,
                 "value",
                 15000,
-                30000
+                30000,
+                "adam",
+                "password"
         );
     }
 
@@ -96,7 +104,9 @@ public class InfluxdbEmitterConfigTest {
                 null,
                 "value",
                 15000,
-                30000
+                30000,
+                "adam",
+                "password"
         );
         int expectedPort = 8086;
         Assert.assertEquals(expectedPort, influxdbEmitterConfig.getPort());
@@ -113,7 +123,9 @@ public class InfluxdbEmitterConfigTest {
                 null,
                 "testField",
                 15000,
-                30000
+                30000,
+                "adam",
+                "password"
         );
         Assert.assertEquals(Arrays.asList("value"), influxdbEmitterConfig.getFields());
     }
@@ -129,7 +141,9 @@ public class InfluxdbEmitterConfigTest {
                 "feed,metric,service",
                 "value",
                 15000,
-                30000
+                30000,
+                "adam",
+                "password"
         );
         Assert.assertTrue(influxdbEmitterConfig.equals(influxdbEmitterConfigComparison));
     }
@@ -145,12 +159,46 @@ public class InfluxdbEmitterConfigTest {
                 "feed,metric,service",
                 "value",
                 15000,
-                10000
+                10000,
+                "adam",
+                "password"
         );
         Assert.assertFalse(influxdbEmitterConfig.equals(influxdbEmitterConfigComparison));
     }
 
+    @Test (expected = NullPointerException.class)
+    public void testConfigWithNullInfluxdbUserName() throws IOException {
+        InfluxdbEmitterConfig influxdbEmitterConfigWithNullHostname = new InfluxdbEmitterConfig(
+                "localhost",
+                8086,
+                "dbname",
+                10000,
+                "Metric",
+                null,
+                "value",
+                15000,
+                30000,
+                null,
+                "password"
+        );
+    }
 
+    @Test (expected = NullPointerException.class)
+    public void testConfigWithNullInfluxdbPassword() throws IOException {
+        InfluxdbEmitterConfig influxdbEmitterConfigWithNullHostname = new InfluxdbEmitterConfig(
+                "localhost",
+                8086,
+                "dbname",
+                10000,
+                "Metric",
+                null,
+                "value",
+                15000,
+                30000,
+                "adam",
+                null
+        );
+    }
 
 
 

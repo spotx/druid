@@ -67,6 +67,8 @@ public class InfluxdbEmitter implements Emitter {
                 "http://" + influxdbEmitterConfig.getHostname()
                  + ":" + influxdbEmitterConfig.getPort()
                  + "/write?db=" + influxdbEmitterConfig.getDatabaseName()
+                 + "&u=" + influxdbEmitterConfig.getInfluxdbUserName()
+                 + "&p=" + influxdbEmitterConfig.getInfluxdbPassword()
         );
 
         post.setEntity(new StringEntity(payload, ContentType.DEFAULT_TEXT));

@@ -34,7 +34,9 @@ public class InfluxdbEmitterTest {
                 null,
                 "value",
                 15000,
-                30000
+                30000,
+                "adam",
+                "password"
         );
         InfluxdbEmitter influxdbEmitter = new InfluxdbEmitter(config);
         String expected = "Metric value=1234 1509357600000000000" + "\n";
@@ -57,7 +59,9 @@ public class InfluxdbEmitterTest {
                 null,
                 "value",
                 15000,
-                30000
+                30000,
+                "adam",
+                "password"
         );
         InfluxdbEmitter influxdbEmitter = new InfluxdbEmitter(config);
         String expected = "druid/historical value=1234 1509357600000000000" + "\n"; // druid/historical is the service and this was set as the measurement
@@ -76,7 +80,9 @@ public class InfluxdbEmitterTest {
                 "feed,eventType,host",
                 "metric,service",
                 15000,
-                30000
+                30000,
+                "adam",
+                "password"
         );
         InfluxdbEmitter influxdbEmitter = new InfluxdbEmitter(config);
         String expected = "Metric,feed=metrics,eventType=ServiceMetricEvent,host=localhost metric=metric/test/value,service=druid/historical 1509357600000000000" + "\n";
