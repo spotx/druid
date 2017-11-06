@@ -6,8 +6,6 @@ import com.google.common.base.Preconditions;
 import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
-
-import io.druid.guice.annotations.Json;
 import io.druid.java.util.common.logger.Logger;
 
 public class InfluxdbEmitterConfig {
@@ -36,6 +34,10 @@ public class InfluxdbEmitterConfig {
     final private Integer flushPeriod;
     @JsonProperty
     final private Integer flushDelay;
+    @JsonProperty
+    final private String influxdbUserName;
+    @JsonProperty
+    final private String influxdbPassword;
 
 
     private static Logger log = new Logger(InfluxdbEmitterConfig.class);
@@ -49,7 +51,9 @@ public class InfluxdbEmitterConfig {
                                  @JsonProperty("tags") String tags,
                                  @JsonProperty("fields") String fields,
                                  @JsonProperty("flushPeriod") Integer flushPeriod,
-                                 @JsonProperty("flushDelay") Integer flushDelay)
+                                 @JsonProperty("flushDelay") Integer flushDelay,
+                                 @JsonProperty("influxdbUserName") String influxdbUserName,
+                                 @JsonProperty("influxdbPassword") String influxdbPassword)
     {
         this.hostname = Preconditions.checkNotNull(hostname, "hostname can not be null");
         this.port = port == null ? DEFAULT_PORT : port;
@@ -60,6 +64,8 @@ public class InfluxdbEmitterConfig {
         this.fields = (ACCEPTED_VALUES.containsAll(Arrays.asList(fields.split(","))) && Arrays.asList(fields.split(",")).size() != 0) ? fields : DEFAULT_FIELD;
         this.flushPeriod = flushPeriod == null ? DEFAULT_FLUSH_PERIOD : flushPeriod;
         this.flushDelay = flushDelay == null ? DEFAULT_FLUSH_PERIOD : flushDelay;
+        this.influxdbUserName = Preconditions.checkNotNull(influxdbUserName, "influxdbUserName can not be null");
+        this.influxdbPassword = Preconditions.checkNotNull(influxdbPassword, "influxdbPassword can not be null");
     }
 
     @Override
@@ -100,6 +106,12 @@ public class InfluxdbEmitterConfig {
         if (getFlushDelay() != that.getFlushDelay()) {
             return false;
         }
+        if (!getInfluxdbUserName().equals(that.getInfluxdbUserName())) {
+            return false;
+        }
+        if (!getInfluxdbPassword().equals(that.getInfluxdbPassword())) {
+            return false;
+        }
         return true;
 
     }
@@ -115,6 +127,8 @@ public class InfluxdbEmitterConfig {
         result = 31 * result + getFlushPeriod();
         result = 31 * result + getMaxQueueSize();
         result = 31 * result + getFlushDelay();
+        result = 31 * result + getInfluxdbUserName().hashCode();
+        result = 31 * result + getInfluxdbPassword().hashCode();
         return result;
     }
 
@@ -166,4 +180,13 @@ public class InfluxdbEmitterConfig {
     public int getFlushDelay() {
         return flushDelay;
     }
+
+    @JsonProperty
+    public String getInfluxdbUserName() {
+        return influxdbUserName;
+    }
+
+    @JsonProperty
+    public String getInfluxdbPassword() { return influxdbPassword; }
+
 }
