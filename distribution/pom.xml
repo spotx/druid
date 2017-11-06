@@ -112,8 +112,6 @@
                                 <argument>-c</argument>
                                 <argument>io.druid.extensions:druid-examples</argument>
                                 <argument>-c</argument>
-                                <argument>io.druid.extensions.contrib:sqlserver-metadata-storage</argument>
-                                <argument>-c</argument>
                                 <argument>io.druid.extensions.contrib:druid-parquet-extensions</argument>
                                 <argument>${druid.distribution.pulldeps.opts}</argument>
                             </arguments>
@@ -234,6 +232,8 @@
                                         <argument>io.druid.extensions.contrib:druid-rabbitmq</argument>
                                         <argument>-c</argument>
                                         <argument>io.druid.extensions.contrib:scan-query</argument>
+                                        <argument>-c</argument>
+                                        <argument>io.druid.extensions.contrib:sqlserver-metadata-storage</argument>
                                         <argument>-c</argument>
                                         <argument>io.druid.extensions.contrib:statsd-emitter</argument>
                                         <argument>-c</argument>
