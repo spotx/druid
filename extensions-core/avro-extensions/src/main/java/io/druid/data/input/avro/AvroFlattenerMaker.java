@@ -81,14 +81,14 @@ public class AvroFlattenerMaker implements ObjectFlatteners.FlattenerMaker<Gener
   @Override
   public Object getRootField(final GenericRecord record, final String key)
   {
-    return transformValue(record.get(key));
+    return transformValue(record.get(key), key);
   }
 
   @Override
   public Function<GenericRecord, Object> makeJsonPathExtractor(final String expr)
   {
     final JsonPath jsonPath = JsonPath.compile(expr);
-    return record -> transformValue(jsonPath.read(record, JSONPATH_CONFIGURATION));
+    return record -> transformValue(jsonPath.read(record, JSONPATH_CONFIGURATION), jsonPath.getPath());
   }
 
   @Override
@@ -97,11 +97,18 @@ public class AvroFlattenerMaker implements ObjectFlatteners.FlattenerMaker<Gener
     throw new UnsupportedOperationException("Avro + JQ not supported");
   }
 
-  private Object transformValue(final Object field)
+  private Object transformValue(final Object field, String path)
   {
-    if (fromPigAvroStorage && field instanceof GenericData.Array) {
-      return Lists.transform((List) field, item -> String.valueOf(((GenericRecord) item).get(0)));
+    if (field instanceof GenericData.Array) {
+      return Lists.transform((List) field, item -> {
+          if( item instanceof GenericRecord) {
+            return  String.valueOf(((GenericRecord) item).get(0));
+          } else {
+            return item.toString();
+          }
+      });
     }
+    
     if (field instanceof ByteBuffer) {
       if (binaryAsString) {
         return StringUtils.fromUtf8(((ByteBuffer) field).array());
@@ -112,6 +119,7 @@ public class AvroFlattenerMaker implements ObjectFlatteners.FlattenerMaker<Gener
     if (field instanceof Utf8) {
       return field.toString();
     }
+
     return field;
   }
 }
