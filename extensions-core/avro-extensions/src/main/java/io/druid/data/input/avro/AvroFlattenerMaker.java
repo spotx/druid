@@ -44,6 +44,7 @@ public class AvroFlattenerMaker implements ObjectFlatteners.FlattenerMaker<Gener
       Configuration.builder()
                    .jsonProvider(new GenericAvroJsonProvider())
                    .mappingProvider(new GenericAvroMappingProvider())
+                   .options(Option.SUPPRESS_EXCEPTIONS)
                    .options(EnumSet.noneOf(Option.class))
                    .build();
 
