@@ -1,6 +1,5 @@
 package io.druid.emitter.influxdb;
 
-import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.metamx.emitter.core.Emitter;
 import com.metamx.emitter.core.Event;
