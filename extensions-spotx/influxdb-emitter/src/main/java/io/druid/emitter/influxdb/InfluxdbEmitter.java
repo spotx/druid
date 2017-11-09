@@ -13,6 +13,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+
+import javax.annotation.RegEx;
 import java.util.Arrays;
 
 public class InfluxdbEmitter implements Emitter {
@@ -131,12 +133,13 @@ public class InfluxdbEmitter implements Emitter {
                 )
             )
         );
-        String payload = parts[0] + ",";
+
+        String payload = "druid_" + parts[0] + ",";
 
         payload += "service=" + getValue("service", event)
-                    + ",metric=" + metric
+                    + ((parts.length == 2) ? "" : ",metric=druid_" + metric)
                     + ",hostname=" + getValue("host",event).split(":")[0]
-                    + " "
+                    + " druid_"
                     + parts[parts.length-1]+ "=" + getValue("value",event);
 
         return payload + " " + event.getCreatedTime().getMillis() * 1000000 + '\n';
