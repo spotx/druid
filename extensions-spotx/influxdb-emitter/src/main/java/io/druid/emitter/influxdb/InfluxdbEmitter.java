@@ -13,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import java.util.Arrays;
 
 public class InfluxdbEmitter implements Emitter {
 
@@ -67,6 +68,8 @@ public class InfluxdbEmitter implements Emitter {
                 "http://" + influxdbEmitterConfig.getHostname()
                  + ":" + influxdbEmitterConfig.getPort()
                  + "/write?db=" + influxdbEmitterConfig.getDatabaseName()
+                 + "&u=" + influxdbEmitterConfig.getInfluxdbUserName()
+                 + "&p=" + influxdbEmitterConfig.getInfluxdbPassword()
         );
 
         post.setEntity(new StringEntity(payload, ContentType.DEFAULT_TEXT));
@@ -116,6 +119,29 @@ public class InfluxdbEmitter implements Emitter {
         return payload;
     }
 
+    public String transformForInfluxSystems(ServiceMetricEvent event) {
+        String[] parts = getValue("metric", event).split("/");
+        String metric =  String.join(
+            "_",
+            Arrays.asList(
+                Arrays.copyOfRange(
+                    parts,
+                    1,
+                    parts.length-1
+                )
+            )
+        );
+        String payload = parts[0] + ",";
+
+        payload += "service=" + getValue("service", event)
+                    + ",metric=" + metric
+                    + ",hostname=" + getValue("host",event).split(":")[0]
+                    + " "
+                    + parts[parts.length-1]+ "=" + getValue("value",event);
+
+        return payload + " " + event.getCreatedTime().getMillis() * 1000000 + '\n';
+    }
+
     public String getValue(String key, ServiceMetricEvent event) {
         switch (key){
             case "service":
@@ -149,12 +175,12 @@ public class InfluxdbEmitter implements Emitter {
     }
 
     public void transformAndSendToInfluxdb(LinkedBlockingQueue<ServiceMetricEvent> eventsQueue) {
-        String payload = "";
+        StringBuilder payload = new StringBuilder();
         int initialQueueSize = eventsQueue.size();
         for (int i =0; i < initialQueueSize; i++) {
-            payload += transformForInflux(eventsQueue.poll());
+            payload.append(transformForInfluxSystems(eventsQueue.poll()));
         }
-        postToInflux(payload);
+        postToInflux(payload.toString());
     }
 
     private class ConsumerRunnable implements Runnable{
