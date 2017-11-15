@@ -20,6 +20,7 @@
 package io.druid.data.input.avro;
 
 import io.druid.data.input.InputRow;
+import io.druid.data.input.avro.processor.utils.DelegatingMap;
 import io.druid.data.input.impl.MapInputRowParser;
 import io.druid.data.input.impl.ParseSpec;
 import io.druid.java.util.common.parsers.JSONPathSpec;
@@ -28,6 +29,8 @@ import io.druid.java.util.common.parsers.ObjectFlatteners;
 import org.apache.avro.generic.GenericRecord;
 
 import java.util.List;
+import io.druid.data.input.avro.processor.MessageProcessor;
+
 
 public class AvroParsers
 {
@@ -58,6 +61,12 @@ public class AvroParsers
       ObjectFlattener<GenericRecord> avroFlattener
   )
   {
-    return new MapInputRowParser(parseSpec).parseBatch(avroFlattener.flatten(record));
+    return new MapInputRowParser(parseSpec).parse(
+        MessageProcessor.process(
+            new DelegatingMap<>(
+                avroFlattener.flatten(record)
+            )
+        )
+    );
   }
 }
