@@ -6,7 +6,8 @@ import java.util.Map;
 
 public class MessageProcessor
 {
-  public static Map<String, Object> process(Map<String, Object> map) {
+
+  public static Map process(Map<String, Object> map) {
 
     //Temporary hack for referrer domain stripping
     //until we have a proper ETL in Druid.
@@ -16,9 +17,6 @@ public class MessageProcessor
           "referrer_domain",
           "([a-z0-9|-]+\\.)*[a-z0-9|-]+\\.[a-z]+"
       );
-
-
-
 
       map = referrerMapper.map(map);
     }
