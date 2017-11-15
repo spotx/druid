@@ -14,7 +14,7 @@ public class MessageProcessor
 
       RegExMapper referrerMapper = new RegExMapper(
           "referrer_domain",
-          ".*//([^/]+)/"
+          "([a-z0-9|-]+\\.)*[a-z0-9|-]+\\.[a-z]+"
       );
 
 
