@@ -19,6 +19,7 @@
 package io.druid.data.input.avro.record;
 
 import io.druid.data.input.MapBasedInputRow;
+import io.druid.data.input.avro.processor.MessageProcessor;
 import io.druid.data.input.impl.ParseSpec;
 import io.druid.data.input.impl.TimestampSpec;
 import io.druid.java.util.common.parsers.Parser;
@@ -41,7 +42,7 @@ public class GenericRecordJSONRowConverter extends GenericRecordRowConverter
   @Override
   public MapBasedInputRow convert(GenericRecord record)
   {
-    Map<String, Object> map = parser.parse(record.toString());
+    Map<String, Object> map = MessageProcessor.process(parser.parse(record.toString()));
     TimestampSpec timestampSpec = parseSpec.getTimestampSpec();
     DateTime dateTime = timestampSpec.extractTimestamp(map);
     return new MapBasedInputRow(dateTime, dimensions, map);
