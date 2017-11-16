@@ -26,5 +26,6 @@ import java.util.Map;
  */
 public interface IMapper
 {
+  boolean canMap(Map<String,Object> map);
   Map<String,Object> map(Map<String,Object> map);
 }

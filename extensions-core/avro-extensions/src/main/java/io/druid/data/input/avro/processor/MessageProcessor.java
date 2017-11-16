@@ -15,7 +15,7 @@ public class MessageProcessor
 
     //Temporary hack for referrer domain stripping
     //until we have a proper ETL in Druid.
-    if( map.containsKey("referrer_domain") ) {
+    if( referrerMapper.canMap(map) ) {
         map = referrerMapper.map(map);
     }
 
