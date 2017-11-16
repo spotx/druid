@@ -38,6 +38,13 @@ public class RegExMapper implements IMapper
     this.field = field;
   }
 
+
+  @Override
+  public boolean canMap(Map<String,Object> map) {
+    return map.containsKey(this.field);
+  }
+
+  @Override
   public Map<String,Object> map(Map<String,Object> map)
   {
     Object value = map.get(field);
