@@ -6,21 +6,17 @@ import java.util.Map;
 
 public class MessageProcessor
 {
+  private static RegExMapper referrerMapper = new RegExMapper(
+      "referrer_domain",
+      "([a-z0-9|-]+\\.)*[a-z0-9|-]+\\.[a-z]+"
+  );
+
   public static Map process(Map<String, Object> map) {
 
     //Temporary hack for referrer domain stripping
     //until we have a proper ETL in Druid.
     if( map.containsKey("referrer_domain") ) {
-
-      RegExMapper referrerMapper = new RegExMapper(
-          "referrer_domain",
-          "([a-z0-9|-]+\\.)*[a-z0-9|-]+\\.[a-z]+"
-      );
-
-
-
-
-      map = referrerMapper.map(map);
+        map = referrerMapper.map(map);
     }
 
     return map;
