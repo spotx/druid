@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,9 +28,6 @@ public class InfluxdbEmitterConfigTest {
                 8086,
                 "dbname",
                 10000,
-                "Metric",
-                "feed,metric,service",
-                "value",
                 15000,
                 30000,
                 "adam",
@@ -46,34 +42,12 @@ public class InfluxdbEmitterConfigTest {
                 8080,
                 "dbname",
                 10000,
-                "Metric",
-                "eventType,host",
-                "value",
                 15000,
                 30000,
                 "adam",
                 "password"
         );
         Assert.assertNotEquals(influxdbEmitterConfig, influxdbEmitterConfigComparison);
-    }
-
-    @Test
-    public void testConfigWithEmptyTags() throws IOException {
-        InfluxdbEmitterConfig influxdbEmitterConfigEmptyTags = new InfluxdbEmitterConfig(
-                "localhost",
-                8080,
-                "dbname",
-                10000,
-                "Metric",
-                null,
-                "value",
-                15000,
-                30000,
-                "adam",
-                "password"
-        );
-        List<String> expectedTags = Collections.emptyList();
-        Assert.assertEquals(influxdbEmitterConfigEmptyTags.getTags(), expectedTags);
     }
 
     @Test (expected = NullPointerException.class)
@@ -83,9 +57,6 @@ public class InfluxdbEmitterConfigTest {
                 8080,
                 "dbname",
                 10000,
-                "Metric",
-                null,
-                "value",
                 15000,
                 30000,
                 "adam",
@@ -100,9 +71,6 @@ public class InfluxdbEmitterConfigTest {
                 null,
                 "dbname",
                 10000,
-                "Metric",
-                null,
-                "value",
                 15000,
                 30000,
                 "adam",
@@ -113,33 +81,12 @@ public class InfluxdbEmitterConfigTest {
     }
 
     @Test
-    public void testConfigWithNotAcceptedFields() throws IOException {
-        InfluxdbEmitterConfig influxdbEmitterConfigWithNotAcceptedFields = new InfluxdbEmitterConfig(
-                "localhost",
-                8086,
-                "dbname",
-                10000,
-                "Metric",
-                null,
-                "testField",
-                15000,
-                30000,
-                "adam",
-                "password"
-        );
-        Assert.assertEquals(Arrays.asList("value"), influxdbEmitterConfig.getFields());
-    }
-
-    @Test
     public void testEqualsMethod() {
         InfluxdbEmitterConfig influxdbEmitterConfigComparison = new InfluxdbEmitterConfig(
                 "localhost",
                 8086,
                 "dbname",
                 10000,
-                "Metric",
-                "feed,metric,service",
-                "value",
                 15000,
                 30000,
                 "adam",
@@ -155,9 +102,6 @@ public class InfluxdbEmitterConfigTest {
                 8086,
                 "dbname",
                 10000,
-                "Metric",
-                "feed,metric,service",
-                "value",
                 15000,
                 10000,
                 "adam",
@@ -173,9 +117,6 @@ public class InfluxdbEmitterConfigTest {
                 8086,
                 "dbname",
                 10000,
-                "Metric",
-                null,
-                "value",
                 15000,
                 30000,
                 null,
@@ -190,16 +131,11 @@ public class InfluxdbEmitterConfigTest {
                 8086,
                 "dbname",
                 10000,
-                "Metric",
-                null,
-                "value",
                 15000,
                 30000,
                 "adam",
                 null
         );
     }
-
-
 
 }
