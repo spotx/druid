@@ -24,7 +24,6 @@ public class InfluxdbEmitterModule implements DruidModule{
 
     public void configure(Binder binder) {
         JsonConfigProvider.bind(binder, "druid.emitter." + EMITTER_TYPE, InfluxdbEmitterConfig.class);
-        log.info("hello world from emitter module");
     }
 
     @Provides

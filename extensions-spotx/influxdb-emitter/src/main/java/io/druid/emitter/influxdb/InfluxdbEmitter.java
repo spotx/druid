@@ -13,7 +13,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-
 import java.util.Arrays;
 
 public class InfluxdbEmitter implements Emitter {
@@ -34,7 +33,6 @@ public class InfluxdbEmitter implements Emitter {
         this.influxdbClient = HttpClientBuilder.create().build();
         this.eventsQueue = new LinkedBlockingQueue(influxdbEmitterConfig.getMaxQueueSize());
         log.info("constructing influxdb emitter");
-
     }
 
     public void start() {
@@ -79,48 +77,14 @@ public class InfluxdbEmitter implements Emitter {
         try {
             influxdbClient.execute(post);
         } catch(IOException ex) {
-            log.info("request failed", ex.getMessage());
+            log.info(ex.toString());
         } finally {
             post.releaseConnection();
         }
     }
 
-    public String transformForInflux(ServiceMetricEvent event)
-    {
-        // transforms a service metric event into a String that can be posted to influxdb.
-        // uses the tags,fields and measurement specified in the config file to comply with influxdb's line protocol
-
-        String payload = getValue(influxdbEmitterConfig.getMeasurement(), event);
-
-        if (influxdbEmitterConfig.getTags().size() == 0) { // checking if tags exist. if no then add a space after the measurement
-            payload += " ";
-        } else { // else append each tag-value pair to the string separated by commas
-            String tagBuilder = ",";
-            for (int i = 0; i < influxdbEmitterConfig.getTags().size()-1; i++){
-                String tag = influxdbEmitterConfig.getTags().get(i);
-                tagBuilder += tag + "=" + getValue(tag, event) + ",";
-            }
-            // a space instead of a comma must proceed the last tag-value pair
-            String lastTag = influxdbEmitterConfig.getTags().get(influxdbEmitterConfig.getTags().size()-1);
-            tagBuilder +=  lastTag + "=" + getValue(lastTag, event) + " ";
-            payload += tagBuilder;
-        }
-
-        //generates the list of fields and field-values then appends to payload
-        String fieldBuilder = "";
-        for (int i = 0; i < influxdbEmitterConfig.getFields().size()-1; i++){
-            String field = influxdbEmitterConfig.getFields().get(i);
-            fieldBuilder += field + "=" + getValue(field, event) + ",";
-        }
-        // last field-value pair must be proceeded by a space and timestamp
-        String lastField = influxdbEmitterConfig.getFields().get(influxdbEmitterConfig.getFields().size()-1);
-        fieldBuilder +=  lastField + "=" + getValue(lastField, event);
-        payload += fieldBuilder + " " + event.getCreatedTime().getMillis() * 1000000 + '\n'; // influxdb uses nano-second epoch timestamp
-
-        return payload;
-    }
-
     public String transformForInfluxSystems(ServiceMetricEvent event) {
+        // split Druid metric on slashes and join middle parts (if any) with "_"
         String[] parts = getValue("metric", event).split("/");
         String metric =  String.join(
             "_",
