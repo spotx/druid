@@ -1,8 +1,8 @@
 package io.druid.emitter.influxdb;
 
 import com.google.common.collect.ImmutableMap;
-import com.metamx.emitter.service.ServiceEventBuilder;
-import com.metamx.emitter.service.ServiceMetricEvent;
+import io.druid.java.util.emitter.service.ServiceEventBuilder;
+import io.druid.java.util.emitter.service.ServiceMetricEvent;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;

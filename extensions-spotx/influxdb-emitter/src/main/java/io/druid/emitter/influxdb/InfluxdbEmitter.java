@@ -1,9 +1,10 @@
 package io.druid.emitter.influxdb;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.metamx.emitter.core.Emitter;
-import com.metamx.emitter.core.Event;
-import com.metamx.emitter.service.ServiceMetricEvent;
+import com.google.common.collect.ImmutableSortedSet;
+import io.druid.java.util.emitter.core.Emitter;
+import io.druid.java.util.emitter.core.Event;
+import io.druid.java.util.emitter.service.ServiceMetricEvent;
 import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -14,6 +15,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import java.util.Arrays;
+import java.util.regex.Pattern;
+
 
 public class InfluxdbEmitter implements Emitter {
 
@@ -101,11 +104,24 @@ public class InfluxdbEmitter implements Emitter {
 
         payload += "service=" + getValue("service", event)
                     + ((parts.length == 2) ? "" : ",metric=druid_" + metric)
-                    + ",hostname=" + getValue("host",event).split(":")[0]
-                    + " druid_"
-                    + parts[parts.length-1]+ "=" + getValue("value",event);
+                    + ",hostname=" + getValue("host",event).split(":")[0];
+
+
+        ImmutableSortedSet<String> dimNames = ImmutableSortedSet.copyOf(event.getUserDims().keySet());
+        for (String dimName : dimNames) {
+            payload += "," + dimName + "=" + sanitize(String.valueOf(event.getUserDims().get(dimName)));
+        }
+
+        payload += " druid_" + parts[parts.length-1]+ "=" + getValue("value",event);
 
         return payload + " " + event.getCreatedTime().getMillis() * 1000000 + '\n';
+    }
+
+    protected static String sanitize(String namespace)
+    {
+        Pattern DOT_OR_WHITESPACE = Pattern.compile("[\\s]+|[.]+");
+        String sanitizedNamespace = DOT_OR_WHITESPACE.matcher(namespace).replaceAll("_");
+        return sanitizedNamespace;
     }
 
     public String getValue(String key, ServiceMetricEvent event) {

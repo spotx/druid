@@ -6,12 +6,12 @@ import io.druid.guice.JsonConfigProvider;
 import io.druid.initialization.DruidModule;
 import java.util.Collections;
 import java.util.List;
-import com.metamx.common.logger.Logger;
+import io.druid.java.util.common.logger.Logger;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
 import io.druid.guice.ManageLifecycle;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.metamx.emitter.core.Emitter;
+import io.druid.java.util.emitter.core.Emitter;
 
 public class InfluxdbEmitterModule implements DruidModule{
 
