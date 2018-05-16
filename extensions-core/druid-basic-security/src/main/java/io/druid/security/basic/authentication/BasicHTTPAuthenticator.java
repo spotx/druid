@@ -158,7 +158,9 @@ public class BasicHTTPAuthenticator implements Authenticator
       String userSecret = BasicAuthUtils.getBasicUserSecretFromHttpReq((HttpServletRequest) servletRequest);
 
       if (userSecret == null) {
-        // Request didn't have HTTP Basic auth credentials, move on to the next filter
+        // Request didn't have HTTP Basic auth credentials, give default access
+        AuthenticationResult authenticationResult = new AuthenticationResult("defaultUser", authorizerName, null);
+        servletRequest.setAttribute(AuthConfig.DRUID_AUTHENTICATION_RESULT, authenticationResult);
         filterChain.doFilter(servletRequest, servletResponse);
         return;
       }
