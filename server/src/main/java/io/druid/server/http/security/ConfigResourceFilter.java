@@ -29,6 +29,7 @@ import io.druid.server.security.Resource;
 import io.druid.server.security.ResourceAction;
 import io.druid.server.security.ResourceType;
 
+
 /**
  * Use this ResourceFilter at end points where Druid Cluster configuration is read or written
  * Here are some example paths where this filter is used -
@@ -52,7 +53,7 @@ public class ConfigResourceFilter extends AbstractResourceFilter
   public ContainerRequest filter(ContainerRequest request)
   {
     final ResourceAction resourceAction = new ResourceAction(
-        new Resource("CONFIG", ResourceType.CONFIG),
+        new Resource(request.getPath(), ResourceType.CONFIG),
         getAction(request)
     );
 
