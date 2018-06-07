@@ -39,6 +39,8 @@ public class AuthConfig
 
   public static final String ALLOW_ALL_NAME = "allowAll";
 
+  public static final String ANONYMOUS_NAME = "anonymous";
+
   public AuthConfig()
   {
     this(null, null, false);
