@@ -19,14 +19,14 @@
 
 package io.druid.server;
 
-import com.google.common.collect.ImmutableMap;
-import io.druid.client.DirectDruidClient;
 import io.druid.java.util.common.guava.Sequence;
 import io.druid.query.Query;
 import io.druid.query.QueryContexts;
 import io.druid.query.QueryPlus;
 import io.druid.query.QueryRunner;
 import io.druid.server.initialization.ServerConfig;
+import io.druid.client.DirectDruidClient;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
@@ -58,12 +58,13 @@ public class SetAndVerifyContextQueryRunner implements QueryRunner
     );
   }
 
-  public <T, QueryType extends Query<T>> QueryType withTimeoutAndMaxScatterGatherBytes(
+  public static <T, QueryType extends Query<T>> QueryType withTimeoutAndMaxScatterGatherBytes(
       final QueryType query,
       ServerConfig serverConfig
   )
   {
-    Query<T> newQuery = QueryContexts.verifyMaxQueryTimeout(
+
+    Query newQuery = QueryContexts.verifyMaxQueryTimeout(
         QueryContexts.withMaxScatterGatherBytes(
             QueryContexts.withDefaultTimeout(
                 (Query) query,
