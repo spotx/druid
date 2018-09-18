@@ -237,9 +237,10 @@ public class IncrementalIndexStorageAdapter implements StorageAdapter
     {
       currEntry = new TimeAndDimsHolder();
       columnSelectorFactory = new IncrementalIndexColumnSelectorFactory(index, virtualColumns, descending, currEntry);
+      // Set maxRowIndex before creating the filterMatcher. See https://github.com/apache/incubator-druid/pull/6340
+      maxRowIndex = index.getLastRowIndex();
       filterMatcher = makeFilterMatcher(filter, this);
       numAdvanced = -1;
-      maxRowIndex = index.getLastRowIndex();
       final long timeStart = Math.max(interval.getStartMillis(), actualInterval.getStartMillis());
       cursorIterable = index.getFacts().timeRangeIterable(
           descending,
