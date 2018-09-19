@@ -28,7 +28,6 @@ import io.druid.java.util.common.StringUtils;
 import io.druid.java.util.common.granularity.Granularities;
 import io.druid.java.util.common.logger.Logger;
 import io.druid.query.Druids;
-import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.timeseries.TimeseriesQuery;
 import io.druid.testing.IntegrationTestingConfig;
@@ -43,6 +42,9 @@ public class TestQueryHelper
   private final QueryResourceTestClient queryClient;
   private final ObjectMapper jsonMapper;
   private final String broker;
+  private final String brokerTLS;
+  private final String router;
+  private final String routerTLS;
 
   @Inject
   TestQueryHelper(
@@ -54,11 +56,17 @@ public class TestQueryHelper
     this.jsonMapper = jsonMapper;
     this.queryClient = queryClient;
     this.broker = config.getBrokerUrl();
+    this.brokerTLS = config.getBrokerTLSUrl();
+    this.router = config.getRouterUrl();
+    this.routerTLS = config.getRouterTLSUrl();
   }
 
   public void testQueriesFromFile(String filePath, int timesToRun) throws Exception
   {
-    testQueriesFromFile(getBrokerURL(), filePath, timesToRun);
+    testQueriesFromFile(getQueryURL(broker), filePath, timesToRun);
+    testQueriesFromFile(getQueryURL(brokerTLS), filePath, timesToRun);
+    testQueriesFromFile(getQueryURL(router), filePath, timesToRun);
+    testQueriesFromFile(getQueryURL(routerTLS), filePath, timesToRun);
   }
 
   public void testQueriesFromFile(String url, String filePath, int timesToRun) throws Exception
@@ -76,7 +84,10 @@ public class TestQueryHelper
 
   public void testQueriesFromString(String str, int timesToRun) throws Exception
   {
-    testQueriesFromString(getBrokerURL(), str, timesToRun);
+    testQueriesFromString(getQueryURL(broker), str, timesToRun);
+    testQueriesFromString(getQueryURL(brokerTLS), str, timesToRun);
+    testQueriesFromString(getQueryURL(router), str, timesToRun);
+    testQueriesFromString(getQueryURL(routerTLS), str, timesToRun);
   }
 
   public void testQueriesFromString(String url, String str, int timesToRun) throws Exception
@@ -94,6 +105,7 @@ public class TestQueryHelper
 
   private void testQueries(String url, List<QueryWithResults> queries, int timesToRun) throws Exception
   {
+    LOG.info("Running queries, url [%s]", url);
     for (int i = 0; i < timesToRun; i++) {
       LOG.info("Starting Iteration %d", i);
 
@@ -120,9 +132,9 @@ public class TestQueryHelper
     }
   }
 
-  private String getBrokerURL()
+  private String getQueryURL(String schemeAndHost)
   {
-    return StringUtils.format("%s/druid/v2?pretty", broker);
+    return StringUtils.format("%s/druid/v2?pretty", schemeAndHost);
   }
 
   @SuppressWarnings("unchecked")
@@ -131,7 +143,7 @@ public class TestQueryHelper
     TimeseriesQuery query = Druids.newTimeseriesQueryBuilder()
                                   .dataSource(dataSource)
                                   .aggregators(
-                                      ImmutableList.<AggregatorFactory>of(
+                                      ImmutableList.of(
                                           new LongSumAggregatorFactory("rows", "count")
                                       )
                                   )
@@ -139,7 +151,7 @@ public class TestQueryHelper
                                   .intervals(interval)
                                   .build();
 
-    List<Map<String, Object>> results = queryClient.query(getBrokerURL(), query);
+    List<Map<String, Object>> results = queryClient.query(getQueryURL(broker), query);
     if (results.isEmpty()) {
       return 0;
     } else {

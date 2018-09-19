@@ -21,14 +21,19 @@ package io.druid.server.http;
 
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import io.druid.client.indexing.IndexingService;
 import io.druid.discovery.DruidLeaderClient;
+import io.druid.guice.annotations.Global;
+import io.druid.guice.http.DruidHttpClientConfig;
 import io.druid.java.util.common.ISE;
 import io.druid.java.util.common.StringUtils;
 import io.druid.server.security.AuthConfig;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.proxy.ProxyServlet;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
@@ -40,13 +45,19 @@ import java.net.URISyntaxException;
 public class OverlordProxyServlet extends ProxyServlet
 {
   private final DruidLeaderClient druidLeaderClient;
+  private final Provider<HttpClient> httpClientProvider;
+  private final DruidHttpClientConfig httpClientConfig;
 
   @Inject
   OverlordProxyServlet(
-      @IndexingService DruidLeaderClient druidLeaderClient
+      @IndexingService DruidLeaderClient druidLeaderClient,
+      @Global Provider<HttpClient> httpClientProvider,
+      @Global DruidHttpClientConfig httpClientConfig
   )
   {
     this.druidLeaderClient = druidLeaderClient;
+    this.httpClientProvider = httpClientProvider;
+    this.httpClientConfig = httpClientConfig;
   }
 
   @Override
@@ -69,6 +80,21 @@ public class OverlordProxyServlet extends ProxyServlet
     catch (URISyntaxException e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  @Override
+  protected HttpClient newHttpClient()
+  {
+    return httpClientProvider.get();
+  }
+
+  @Override
+  protected HttpClient createHttpClient() throws ServletException
+  {
+    HttpClient client = super.createHttpClient();
+    // override timeout set in ProxyServlet.createHttpClient
+    setTimeout(httpClientConfig.getReadTimeout().getMillis());
+    return client;
   }
 
   @Override

@@ -195,7 +195,7 @@ public class ITKafkaTest extends AbstractIndexerTest
       LOG.info("indexerFile name: [%s]", INDEXER_FILE);
 
       Properties consumerProperties = new Properties();
-      consumerProperties.put("zookeeper.connect", config.getZookeeperHosts());
+      consumerProperties.put("zookeeper.connect", config.getZookeeperInternalHosts());
       consumerProperties.put("zookeeper.connection.timeout.ms", "15000");
       consumerProperties.put("zookeeper.sync.time.ms", "5000");
       consumerProperties.put("group.id", Long.toString(System.currentTimeMillis()));
@@ -225,7 +225,7 @@ public class ITKafkaTest extends AbstractIndexerTest
     LOG.info("-------------SUBMITTED TASK");
 
     // wait for the task to finish
-    indexer.waitUntilTaskCompletes(taskID, 20000, 30);
+    indexer.waitUntilTaskCompletes(taskID, 10000, 60);
 
     // wait for segments to be handed off
     try {
@@ -239,8 +239,8 @@ public class ITKafkaTest extends AbstractIndexerTest
             }
           },
           true,
-          30000,
-          10,
+          10000,
+          30,
           "Real-time generated segments loaded"
       );
     }

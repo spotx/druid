@@ -19,6 +19,7 @@
 
 package io.druid.segment.incremental;
 
+import io.druid.java.util.common.DateTimes;
 import io.druid.java.util.common.StringUtils;
 import io.druid.segment.IndexSpec;
 import io.druid.segment.IndexableAdapter;
@@ -28,7 +29,6 @@ import io.druid.segment.data.CompressionFactory;
 import io.druid.segment.data.CompressionStrategy;
 import io.druid.segment.data.ConciseBitmapSerdeFactory;
 import io.druid.segment.data.IncrementalIndexTest;
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -147,16 +147,15 @@ public class IncrementalIndexAdapterTest
       if (rowNumber < 3) {
         return StringUtils.format(
             "Rowboat{timestamp=%s, dims=[[0], [0]], metrics=[1], comprisedRows={}}",
-            new DateTime(timestamp)
+            DateTimes.utc(timestamp)
         );
       } else {
         return StringUtils.format(
             "Rowboat{timestamp=%s, dims=[[1], [1]], metrics=[1], comprisedRows={}}",
-            new DateTime(timestamp)
+            DateTimes.utc(timestamp)
         );
       }
     };
-
 
     // without sorting, output would be
     //    RowPointer{indexNum=0, rowNumber=0, timestamp=1533347274588, dimensions={dim1=1, dim2=2}, metrics={count=1}}

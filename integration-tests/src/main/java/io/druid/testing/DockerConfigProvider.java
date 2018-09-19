@@ -28,7 +28,6 @@ import java.util.Map;
 
 public class DockerConfigProvider implements IntegrationTestingConfigProvider
 {
-
   @JsonProperty
   @NotNull
   private String dockerIp;
@@ -49,9 +48,21 @@ public class DockerConfigProvider implements IntegrationTestingConfigProvider
       }
 
       @Override
+      public String getCoordinatorTLSUrl()
+      {
+        return "https://" + dockerIp + ":8281";
+      }
+
+      @Override
       public String getIndexerUrl()
       {
         return "http://" + dockerIp + ":8090";
+      }
+
+      @Override
+      public String getIndexerTLSUrl()
+      {
+        return "https://" + dockerIp + ":8290";
       }
 
       @Override
@@ -61,15 +72,57 @@ public class DockerConfigProvider implements IntegrationTestingConfigProvider
       }
 
       @Override
+      public String getRouterTLSUrl()
+      {
+        return "https://" + dockerIp + ":9088";
+      }
+
+      @Override
+      public String getPermissiveRouterUrl()
+      {
+        return "http://" + dockerIp + ":8889";
+      }
+
+      @Override
+      public String getPermissiveRouterTLSUrl()
+      {
+        return "https://" + dockerIp + ":9089";
+      }
+
+      @Override
+      public String getNoClientAuthRouterUrl()
+      {
+        return "http://" + dockerIp + ":8890";
+      }
+
+      @Override
+      public String getNoClientAuthRouterTLSUrl()
+      {
+        return "https://" + dockerIp + ":9090";
+      }
+
+      @Override
       public String getBrokerUrl()
       {
         return "http://" + dockerIp + ":8082";
       }
 
       @Override
+      public String getBrokerTLSUrl()
+      {
+        return "https://" + dockerIp + ":8282";
+      }
+
+      @Override
       public String getHistoricalUrl()
       {
         return "http://" + dockerIp + ":8083";
+      }
+
+      @Override
+      public String getHistoricalTLSUrl()
+      {
+        return "https://" + dockerIp + ":8283";
       }
 
       @Override
@@ -85,16 +138,29 @@ public class DockerConfigProvider implements IntegrationTestingConfigProvider
       }
 
       @Override
-      public String getKafkaHost()
+      public String getZookeeperInternalHosts()
       {
-        return dockerIp + ":9092";
+        // docker container name
+        return "druid-zookeeper-kafka:2181";
       }
 
+      @Override
+      public String getKafkaHost()
+      {
+        return dockerIp + ":9093";
+      }
+
+      @Override
+      public String getKafkaInternalHost()
+      {
+        // docker container name
+        return "druid-zookeeper-kafka:9092";
+      }
 
       @Override
       public String getProperty(String prop)
       {
-        if (prop.equals("hadoopTestDir")) {
+        if ("hadoopTestDir".equals(prop)) {
           return hadoopDir;
         }
         throw new UnsupportedOperationException("DockerConfigProvider does not support property " + prop);

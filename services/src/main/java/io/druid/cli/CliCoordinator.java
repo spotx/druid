@@ -44,6 +44,7 @@ import io.druid.guice.LifecycleModule;
 import io.druid.guice.ManageLifecycle;
 import io.druid.guice.annotations.CoordinatorIndexingServiceHelper;
 import io.druid.guice.annotations.EscalatedGlobal;
+import io.druid.guice.http.JettyHttpClientModule;
 import io.druid.java.util.common.concurrent.ScheduledExecutorFactory;
 import io.druid.java.util.common.logger.Logger;
 import io.druid.java.util.http.client.HttpClient;
@@ -125,6 +126,8 @@ public class CliCoordinator extends ServerRunnable
   protected List<? extends Module> getModules()
   {
     List<Module> modules = new ArrayList<>();
+
+    modules.add(JettyHttpClientModule.global());
 
     modules.add(
         new Module()

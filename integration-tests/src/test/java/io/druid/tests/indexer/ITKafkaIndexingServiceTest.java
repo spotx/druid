@@ -141,7 +141,7 @@ public class ITKafkaIndexingServiceTest extends AbstractIndexerTest
     try {
       LOG.info("supervisorSpec name: [%s]", INDEXER_FILE);
       Properties consumerProperties = new Properties();
-      consumerProperties.put("bootstrap.servers", config.getKafkaHost());
+      consumerProperties.put("bootstrap.servers", config.getKafkaInternalHost());
       addFilteredProperties(consumerProperties);
 
       spec = getTaskAsString(INDEXER_FILE)
@@ -277,8 +277,8 @@ public class ITKafkaIndexingServiceTest extends AbstractIndexerTest
             }
           },
           true,
-          30000,
-          10,
+          10000,
+          30,
           "Real-time generated segments loaded"
       );
     }

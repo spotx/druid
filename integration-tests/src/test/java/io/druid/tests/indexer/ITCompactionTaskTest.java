@@ -36,25 +36,28 @@ public class ITCompactionTaskTest extends AbstractIndexerTest
   private static String INDEX_QUERIES_RESOURCE = "/indexer/wikipedia_index_queries.json";
   private static String INDEX_DATASOURCE = "wikipedia_index_test";
   private static String COMPACTION_TASK = "/indexer/wikipedia_compaction_task.json";
-  private static String COMPACTED_INTERVAL = "2013-08-31T00:00:00.000Z/2013-09-02T00:00:00.000Z";
 
   @Test
-  public void testCompaction() throws Exception
+  public void testCompactionWithoutKeepSegmentGranularity() throws Exception
   {
     loadData();
     final List<String> intervalsBeforeCompaction = coordinator.getSegmentIntervals(INDEX_DATASOURCE);
-    if (intervalsBeforeCompaction.contains(COMPACTED_INTERVAL)) {
-      throw new ISE("Containing a segment for the compacted interval[%s] before compaction", COMPACTED_INTERVAL);
+    intervalsBeforeCompaction.sort(null);
+    final String compactedInterval = "2013-08-31T00:00:00.000Z/2013-09-02T00:00:00.000Z";
+    if (intervalsBeforeCompaction.contains(compactedInterval)) {
+      throw new ISE("Containing a segment for the compacted interval[%s] before compaction", compactedInterval);
     }
     try {
       queryHelper.testQueriesFromFile(INDEX_QUERIES_RESOURCE, 2);
-      compactData();
+      compactData(false);
+
+      // 2 segments compacted into 1 new segment (3 total)
+      checkCompactionFinished(3);
       queryHelper.testQueriesFromFile(INDEX_QUERIES_RESOURCE, 2);
 
-      final List<String> intervalsAfterCompaction = coordinator.getSegmentIntervals(INDEX_DATASOURCE);
-      if (!intervalsAfterCompaction.contains(COMPACTED_INTERVAL)) {
-        throw new ISE("Compacted segment for interval[%s] does not exist", COMPACTED_INTERVAL);
-      }
+      intervalsBeforeCompaction.add(compactedInterval);
+      intervalsBeforeCompaction.sort(null);
+      checkCompactionIntervals(intervalsBeforeCompaction);
     }
     finally {
       unloadAndKillData(INDEX_DATASOURCE);
@@ -73,15 +76,43 @@ public class ITCompactionTaskTest extends AbstractIndexerTest
     );
   }
 
-  private void compactData() throws Exception
+  private void compactData(boolean keepSegmentGranularity) throws Exception
   {
-    final String taskID = indexer.submitTask(getTaskAsString(COMPACTION_TASK));
+    final String template = getTaskAsString(COMPACTION_TASK);
+    final String taskSpec = template.replace("${KEEP_SEGMENT_GRANULARITY}", Boolean.toString(keepSegmentGranularity));
+    final String taskID = indexer.submitTask(taskSpec);
     LOG.info("TaskID for compaction task %s", taskID);
     indexer.waitUntilTaskCompletes(taskID);
 
     RetryUtil.retryUntilTrue(
         () -> coordinator.areSegmentsLoaded(INDEX_DATASOURCE),
         "Segment Compaction"
+    );
+  }
+
+  private void checkCompactionFinished(int numExpectedSegments)
+  {
+    RetryUtil.retryUntilTrue(
+        () -> {
+          int metadataSegmentCount = coordinator.getMetadataSegments(INDEX_DATASOURCE).size();
+          LOG.info("Current metadata segment count: %d, expected: %d", metadataSegmentCount, numExpectedSegments);
+          return metadataSegmentCount == numExpectedSegments;
+        },
+        "Compaction segment count check"
+    );
+  }
+
+  private void checkCompactionIntervals(List<String> expectedIntervals)
+  {
+    RetryUtil.retryUntilTrue(
+        () -> {
+          final List<String> intervalsAfterCompaction = coordinator.getSegmentIntervals(INDEX_DATASOURCE);
+          intervalsAfterCompaction.sort(null);
+          System.out.println("AFTER: " + intervalsAfterCompaction);
+          System.out.println("EXPECTED: " + expectedIntervals);
+          return intervalsAfterCompaction.equals(expectedIntervals);
+        },
+        "Compaction interval check"
     );
   }
 }

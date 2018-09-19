@@ -22,21 +22,29 @@ package io.druid.tests.indexer;
 import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
+import io.druid.java.util.common.StringUtils;
 import io.druid.java.util.http.client.HttpClient;
 import io.druid.curator.discovery.ServerDiscoveryFactory;
 import io.druid.curator.discovery.ServerDiscoverySelector;
 import io.druid.java.util.common.DateTimes;
 import io.druid.java.util.common.logger.Logger;
+import io.druid.java.util.http.client.Request;
+import io.druid.java.util.http.client.response.StatusResponseHandler;
+import io.druid.java.util.http.client.response.StatusResponseHolder;
 import io.druid.testing.IntegrationTestingConfig;
 import io.druid.testing.clients.EventReceiverFirehoseTestClient;
 import io.druid.testing.guice.DruidTestModuleFactory;
 import io.druid.testing.guice.TestClient;
 import io.druid.testing.utils.RetryUtil;
 import io.druid.testing.utils.ServerDiscoveryUtil;
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.joda.time.DateTime;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -170,6 +178,26 @@ public class ITUnionQueryTest extends AbstractIndexerTest
       String host = config.getMiddleManagerHost() + ":" + eventReceiverSelector.pick().getPort();
 
       LOG.info("Event Receiver Found at host [%s]", host);
+
+      LOG.info("Checking worker /status/health for [%s]", host);
+      final StatusResponseHandler handler = new StatusResponseHandler(StandardCharsets.UTF_8);
+      RetryUtil.retryUntilTrue(
+          () -> {
+            try {
+              StatusResponseHolder response = httpClient.go(
+                  new Request(HttpMethod.GET, new URL(StringUtils.format("https://%s/status/health", host))),
+                  handler
+              ).get();
+              return response.getStatus().equals(HttpResponseStatus.OK);
+            }
+            catch (Throwable e) {
+              LOG.error(e, "");
+              return false;
+            }
+          },
+          StringUtils.format("Checking /status/health for worker [%s]", host)
+      );
+      LOG.info("Finished checking worker /status/health for [%s], success", host);
 
       EventReceiverFirehoseTestClient client = new EventReceiverFirehoseTestClient(
           host,

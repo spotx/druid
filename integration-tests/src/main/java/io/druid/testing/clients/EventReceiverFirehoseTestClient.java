@@ -22,7 +22,6 @@ package io.druid.testing.clients;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.smile.SmileMediaTypes;
-import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import io.druid.java.util.http.client.HttpClient;
 import io.druid.java.util.http.client.Request;
@@ -63,7 +62,7 @@ public class EventReceiverFirehoseTestClient
   {
     this.host = host;
     this.jsonMapper = jsonMapper;
-    this.responseHandler = new StatusResponseHandler(Charsets.UTF_8);
+    this.responseHandler = new StatusResponseHandler(StandardCharsets.UTF_8);
     this.httpClient = httpClient;
     this.chatID = chatID;
     this.smileMapper = smileMapper;
@@ -72,7 +71,7 @@ public class EventReceiverFirehoseTestClient
   private String getURL()
   {
     return StringUtils.format(
-        "http://%s/druid/worker/v1/chat/%s/push-events/",
+        "https://%s/druid/worker/v1/chat/%s/push-events/",
         host,
         chatID
     );
@@ -154,7 +153,7 @@ public class EventReceiverFirehoseTestClient
                            ? MediaType.APPLICATION_JSON
                            : SmileMediaTypes.APPLICATION_JACKSON_SMILE;
         totalEventsPosted += postEvents(events, mapper, mediaType);
-        ;
+
         expectedEventsPosted += events.size();
         events = new ArrayList<>();
       }

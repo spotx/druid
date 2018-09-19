@@ -75,7 +75,9 @@ import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManagerFactory;
 import javax.servlet.ServletException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -257,6 +259,37 @@ public class JettyServerModule extends JerseyServletModule
         if (tlsServerConfig.getExcludeProtocols() != null) {
           sslContextFactory.setExcludeProtocols(
               tlsServerConfig.getExcludeProtocols().toArray(new String[tlsServerConfig.getExcludeProtocols().size()]));
+        }
+
+        sslContextFactory.setNeedClientAuth(tlsServerConfig.isRequireClientCertificate());
+        if (tlsServerConfig.isRequireClientCertificate()) {
+          if (tlsServerConfig.getCrlPath() != null) {
+            // setValidatePeerCerts is used just to enable revocation checking using a static CRL file.
+            // Certificate validation is always performed when client certificates are required.
+            sslContextFactory.setValidatePeerCerts(true);
+            sslContextFactory.setCrlPath(tlsServerConfig.getCrlPath());
+          }
+          if (tlsServerConfig.isValidateHostnames()) {
+            sslContextFactory.setEndpointIdentificationAlgorithm("HTTPS");
+          }
+          if (tlsServerConfig.getTrustStorePath() != null) {
+            sslContextFactory.setTrustStorePath(tlsServerConfig.getTrustStorePath());
+            sslContextFactory.setTrustStoreType(
+                tlsServerConfig.getTrustStoreType() == null
+                ? KeyStore.getDefaultType()
+                : tlsServerConfig.getTrustStoreType()
+            );
+            sslContextFactory.setTrustManagerFactoryAlgorithm(
+                tlsServerConfig.getTrustStoreAlgorithm() == null
+                ? TrustManagerFactory.getDefaultAlgorithm()
+                : tlsServerConfig.getTrustStoreAlgorithm()
+            );
+            sslContextFactory.setTrustStorePassword(
+                tlsServerConfig.getTrustStorePasswordProvider() == null
+                ? null
+                : tlsServerConfig.getTrustStorePasswordProvider().getPassword()
+            );
+          }
         }
       } else {
         sslContextFactory = sslContextFactoryBinding.getProvider().get();

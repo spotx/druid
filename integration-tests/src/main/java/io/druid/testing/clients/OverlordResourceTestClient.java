@@ -21,10 +21,10 @@ package io.druid.testing.clients;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
 import com.google.common.base.Predicates;
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
+import io.druid.indexing.overlord.http.TaskStatusResponse;
 import io.druid.java.util.http.client.HttpClient;
 import io.druid.java.util.http.client.Request;
 import io.druid.java.util.http.client.response.StatusResponseHandler;
@@ -43,13 +43,14 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class OverlordResourceTestClient
 {
-  private final static Logger LOG = new Logger(OverlordResourceTestClient.class);
+  private static final Logger LOG = new Logger(OverlordResourceTestClient.class);
   private final ObjectMapper jsonMapper;
   private final HttpClient httpClient;
   private final String indexer;
@@ -65,7 +66,7 @@ public class OverlordResourceTestClient
     this.jsonMapper = jsonMapper;
     this.httpClient = httpClient;
     this.indexer = config.getIndexerUrl();
-    this.responseHandler = new StatusResponseHandler(Charsets.UTF_8);
+    this.responseHandler = new StatusResponseHandler(StandardCharsets.UTF_8);
   }
 
   private String getIndexerURL()
@@ -80,35 +81,30 @@ public class OverlordResourceTestClient
   {
     try {
       return RetryUtils.retry(
-          new Callable<String>()
-          {
-            @Override
-            public String call() throws Exception
-            {
-              StatusResponseHolder response = httpClient.go(
-                  new Request(HttpMethod.POST, new URL(getIndexerURL() + "task"))
-                      .setContent(
-                          "application/json",
-                          StringUtils.toUtf8(task)
-                      ),
-                  responseHandler
-              ).get();
-              if (!response.getStatus().equals(HttpResponseStatus.OK)) {
-                throw new ISE(
-                    "Error while submitting task to indexer response [%s %s]",
-                    response.getStatus(),
-                    response.getContent()
-                );
-              }
-              Map<String, String> responseData = jsonMapper.readValue(
-                  response.getContent(), JacksonUtils.TYPE_REFERENCE_MAP_STRING_STRING
+          () -> {
+            StatusResponseHolder response = httpClient.go(
+                new Request(HttpMethod.POST, new URL(getIndexerURL() + "task"))
+                    .setContent(
+                        "application/json",
+                        StringUtils.toUtf8(task)
+                    ),
+                responseHandler
+            ).get();
+            if (!response.getStatus().equals(HttpResponseStatus.OK)) {
+              throw new ISE(
+                  "Error while submitting task to indexer response [%s %s]",
+                  response.getStatus(),
+                  response.getContent()
               );
-              String taskID = responseData.get("task");
-              LOG.info("Submitted task with TaskID[%s]", taskID);
-              return taskID;
             }
+            Map<String, String> responseData = jsonMapper.readValue(
+                response.getContent(), JacksonUtils.TYPE_REFERENCE_MAP_STRING_STRING
+            );
+            String taskID = responseData.get("task");
+            LOG.info("Submitted task with TaskID[%s]", taskID);
+            return taskID;
           },
-          Predicates.<Throwable>alwaysTrue(),
+          Predicates.alwaysTrue(),
           5
       );
     }
@@ -130,12 +126,13 @@ public class OverlordResourceTestClient
       );
 
       LOG.info("Index status response" + response.getContent());
-      Map<String, Object> responseData = jsonMapper.readValue(
-          response.getContent(), JacksonUtils.TYPE_REFERENCE_MAP_STRING_OBJECT
+      TaskStatusResponse taskStatusResponse = jsonMapper.readValue(
+          response.getContent(),
+          new TypeReference<TaskStatusResponse>()
+          {
+          }
       );
-      //TODO: figure out a better way to parse the response...
-      String status = (String) ((Map) responseData.get("status")).get("status");
-      return TaskState.valueOf(status);
+      return taskStatusResponse.getStatus().getStatusCode();
     }
     catch (Exception e) {
       throw Throwables.propagate(e);
@@ -178,7 +175,7 @@ public class OverlordResourceTestClient
 
   public void waitUntilTaskCompletes(final String taskID)
   {
-    waitUntilTaskCompletes(taskID, 60000, 10);
+    waitUntilTaskCompletes(taskID, 10000, 60);
   }
 
   public void waitUntilTaskCompletes(final String taskID, final int millisEach, final int numTimes)
@@ -187,7 +184,7 @@ public class OverlordResourceTestClient
         new Callable<Boolean>()
         {
           @Override
-          public Boolean call() throws Exception
+          public Boolean call()
           {
             TaskState status = getTaskStatus(taskID);
             if (status == TaskState.FAILED) {
@@ -271,5 +268,4 @@ public class OverlordResourceTestClient
       throw Throwables.propagate(e);
     }
   }
-
 }

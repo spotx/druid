@@ -21,7 +21,6 @@ package io.druid.testing.clients;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import io.druid.java.util.http.client.HttpClient;
@@ -38,6 +37,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.joda.time.Interval;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class CoordinatorResourceTestClient
     this.jsonMapper = jsonMapper;
     this.httpClient = httpClient;
     this.coordinator = config.getCoordinatorUrl();
-    this.responseHandler = new StatusResponseHandler(Charsets.UTF_8);
+    this.responseHandler = new StatusResponseHandler(StandardCharsets.UTF_8);
   }
 
   private String getCoordinatorURL()
@@ -68,6 +68,11 @@ public class CoordinatorResourceTestClient
         "%s/druid/coordinator/v1/",
         coordinator
     );
+  }
+
+  private String getMetadataSegmentsURL(String dataSource)
+  {
+    return StringUtils.format("%smetadata/datasources/%s/segments", getCoordinatorURL(), dataSource);
   }
 
   private String getIntervalsURL(String dataSource)
@@ -81,7 +86,26 @@ public class CoordinatorResourceTestClient
   }
 
   // return a list of the segment dates for the specified datasource
-  public List<String> getSegmentIntervals(final String dataSource) throws Exception
+  public List<String> getMetadataSegments(final String dataSource)
+  {
+    ArrayList<String> segments = null;
+    try {
+      StatusResponseHolder response = makeRequest(HttpMethod.GET, getMetadataSegmentsURL(dataSource));
+
+      segments = jsonMapper.readValue(
+          response.getContent(), new TypeReference<ArrayList<String>>()
+          {
+          }
+      );
+    }
+    catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
+    return segments;
+  }
+
+  // return a list of the segment dates for the specified datasource
+  public List<String> getSegmentIntervals(final String dataSource)
   {
     ArrayList<String> segments = null;
     try {
