@@ -22,8 +22,8 @@ package io.druid.indexing.overlord.supervisor;
 import com.google.common.collect.ImmutableMap;
 import io.druid.indexing.overlord.DataSourceMetadata;
 
-import java.util.Map;
 import javax.annotation.Nullable;
+import java.util.Map;
 
 public interface Supervisor
 {

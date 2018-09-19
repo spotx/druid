@@ -2,6 +2,10 @@
 layout: doc_page
 ---
 
+<div class="note info">
+NOTE: Realtime nodes are deprecated. Please use the <a href="../development/extensions-core/kafka-ingestion.html">Kafka Indexing Service</a> for stream pull use cases instead. 
+</div>
+
 Stream Pull Ingestion
 =====================
 
@@ -335,10 +339,3 @@ This can be difficult to manage at scale, especially with multiple partitions.
 
 Each standalone realtime node has its own set of logs. Diagnosing errors across many partitions across many servers may be 
 difficult to manage and track at scale.
-
-## Deployment Notes
-
-Stream ingestion may generate a large number of small segments because it's difficult to optimize the segment size at
-ingestion time. The number of segments will increase over time, and this might cause the query performance issue. 
-
-Details on how to optimize the segment size can be found on [Segment size optimization](../../operations/segment-optimization.html).
