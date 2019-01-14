@@ -26,6 +26,7 @@ import io.druid.java.util.emitter.core.Event;
 import io.druid.java.util.emitter.service.ServiceMetricEvent;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -33,11 +34,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 
 import io.druid.java.util.common.logger.Logger;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import javax.net.ssl.SSLContext;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -62,7 +65,13 @@ public class InfluxdbEmitter implements Emitter
   public InfluxdbEmitter(InfluxdbEmitterConfig influxdbEmitterConfig)
   {
     this.influxdbEmitterConfig = influxdbEmitterConfig;
-    this.influxdbClient = HttpClientBuilder.create().build();
+    SSLContext sslContext = null;
+    try {
+      sslContext = SSLContext.getDefault();
+    } catch (NoSuchAlgorithmException e) {
+      log.error("Unable to set sslContext: " + e.toString());
+    }
+    this.influxdbClient = HttpClients.custom().setSSLContext(sslContext).build();
     this.eventsQueue = new LinkedBlockingQueue<>(influxdbEmitterConfig.getMaxQueueSize());
 
     this.dimensionWhiteList = ImmutableSet.of(
@@ -109,10 +118,11 @@ public class InfluxdbEmitter implements Emitter
     }
   }
 
+
   public void postToInflux(String payload)
   {
     HttpPost post = new HttpPost(
-        "http://" + influxdbEmitterConfig.getHostname()
+        "https://" + influxdbEmitterConfig.getHostname()
         + ":" + influxdbEmitterConfig.getPort()
         + "/write?db=" + influxdbEmitterConfig.getDatabaseName()
         + "&u=" + influxdbEmitterConfig.getInfluxdbUserName()
@@ -123,7 +133,8 @@ public class InfluxdbEmitter implements Emitter
     post.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
     try {
-      influxdbClient.execute(post);
+      HttpResponse response = influxdbClient.execute(post);
+      log.info("Response from POSTing to Influx: " + response.getStatusLine().toString());
     }
     catch (IOException ex) {
       log.info(ex.toString());
