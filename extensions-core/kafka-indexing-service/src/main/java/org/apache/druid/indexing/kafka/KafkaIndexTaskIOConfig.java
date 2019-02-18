@@ -52,8 +52,7 @@ public class KafkaIndexTaskIOConfig extends SeekableStreamIndexTaskIOConfig<Inte
       @JsonProperty("pollTimeout") Long pollTimeout,
       @JsonProperty("useTransaction") Boolean useTransaction,
       @JsonProperty("minimumMessageTime") DateTime minimumMessageTime,
-      @JsonProperty("maximumMessageTime") DateTime maximumMessageTime,
-      @JsonProperty("skipOffsetGaps") Boolean skipOffsetGaps
+      @JsonProperty("maximumMessageTime") DateTime maximumMessageTime
   )
   {
     super(
@@ -65,8 +64,7 @@ public class KafkaIndexTaskIOConfig extends SeekableStreamIndexTaskIOConfig<Inte
         endSequenceNumbers == null ? endPartitions : endSequenceNumbers,
         useTransaction,
         minimumMessageTime,
-        maximumMessageTime,
-        skipOffsetGaps
+        maximumMessageTime
     );
 
     this.consumerProperties = Preconditions.checkNotNull(consumerProperties, "consumerProperties");
@@ -93,8 +91,7 @@ public class KafkaIndexTaskIOConfig extends SeekableStreamIndexTaskIOConfig<Inte
       Long pollTimeout,
       Boolean useTransaction,
       DateTime minimumMessageTime,
-      DateTime maximumMessageTime,
-      Boolean skipOffsetGaps
+      DateTime maximumMessageTime
   )
   {
     this(
@@ -108,8 +105,7 @@ public class KafkaIndexTaskIOConfig extends SeekableStreamIndexTaskIOConfig<Inte
         pollTimeout,
         useTransaction,
         minimumMessageTime,
-        maximumMessageTime,
-        skipOffsetGaps
+        maximumMessageTime
     );
   }
 
@@ -164,7 +160,6 @@ public class KafkaIndexTaskIOConfig extends SeekableStreamIndexTaskIOConfig<Inte
            ", useTransaction=" + isUseTransaction() +
            ", minimumMessageTime=" + getMinimumMessageTime() +
            ", maximumMessageTime=" + getMaximumMessageTime() +
-           ", skipOffsetGaps=" + isSkipOffsetGaps() +
            '}';
   }
 }

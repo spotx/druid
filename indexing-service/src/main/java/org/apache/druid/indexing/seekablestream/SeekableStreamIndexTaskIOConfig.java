@@ -40,7 +40,6 @@ public abstract class SeekableStreamIndexTaskIOConfig<PartitionIdType, SequenceO
   private final boolean useTransaction;
   private final Optional<DateTime> minimumMessageTime;
   private final Optional<DateTime> maximumMessageTime;
-  private final boolean skipOffsetGaps;
 
   public SeekableStreamIndexTaskIOConfig(
       final @Nullable Integer taskGroupId, // can be null for backward compabitility
@@ -49,8 +48,7 @@ public abstract class SeekableStreamIndexTaskIOConfig<PartitionIdType, SequenceO
       final SeekableStreamEndSequenceNumbers<PartitionIdType, SequenceOffsetType> endSequenceNumbers,
       final Boolean useTransaction,
       final DateTime minimumMessageTime,
-      final DateTime maximumMessageTime,
-      final Boolean skipOffsetGaps
+      final DateTime maximumMessageTime
   )
   {
     this.taskGroupId = taskGroupId;
@@ -60,7 +58,6 @@ public abstract class SeekableStreamIndexTaskIOConfig<PartitionIdType, SequenceO
     this.useTransaction = useTransaction != null ? useTransaction : DEFAULT_USE_TRANSACTION;
     this.minimumMessageTime = Optional.fromNullable(minimumMessageTime);
     this.maximumMessageTime = Optional.fromNullable(maximumMessageTime);
-    this.skipOffsetGaps = skipOffsetGaps != null ? skipOffsetGaps : DEFAULT_SKIP_OFFSET_GAPS;
 
     Preconditions.checkArgument(
         startSequenceNumbers.getStream().equals(endSequenceNumbers.getStream()),
@@ -118,9 +115,4 @@ public abstract class SeekableStreamIndexTaskIOConfig<PartitionIdType, SequenceO
     return minimumMessageTime;
   }
 
-  @JsonProperty
-  public boolean isSkipOffsetGaps()
-  {
-    return skipOffsetGaps;
-  }
 }

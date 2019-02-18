@@ -66,15 +66,7 @@ public class KinesisIndexTaskIOConfig extends SeekableStreamIndexTaskIOConfig<St
         endSequenceNumbers,
         useTransaction,
         minimumMessageTime,
-        maximumMessageTime,
-        true
-    );
-    Preconditions.checkArgument(
-        endSequenceNumbers.getPartitionSequenceNumberMap()
-                          .values()
-                          .stream()
-                          .noneMatch(x -> x.equals(KinesisSequenceNumber.END_OF_SHARD_MARKER)),
-        "End sequenceNumbers must not have the end of shard marker (EOS)"
+        maximumMessageTime
     );
 
     this.endpoint = Preconditions.checkNotNull(endpoint, "endpoint");
