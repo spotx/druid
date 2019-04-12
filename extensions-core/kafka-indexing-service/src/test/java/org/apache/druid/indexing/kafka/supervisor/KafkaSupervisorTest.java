@@ -554,15 +554,15 @@ public class KafkaSupervisorTest extends EasyMockSupport
 
     KafkaIndexTask task = captured.getValue();
     Assert.assertEquals(
-        1100L,
+        1101L,
         task.getIOConfig().getStartSequenceNumbers().getPartitionSequenceNumberMap().get(0).longValue()
     );
     Assert.assertEquals(
-        1100L,
+        1101L,
         task.getIOConfig().getStartSequenceNumbers().getPartitionSequenceNumberMap().get(1).longValue()
     );
     Assert.assertEquals(
-        1100L,
+        1101L,
         task.getIOConfig().getStartSequenceNumbers().getPartitionSequenceNumberMap().get(2).longValue()
     );
   }
