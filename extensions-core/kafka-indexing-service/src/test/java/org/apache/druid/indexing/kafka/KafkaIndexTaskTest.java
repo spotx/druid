@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.base.Throwables;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -280,41 +279,41 @@ public class KafkaIndexTaskTest
   private static List<ProducerRecord<byte[], byte[]>> generateRecords(String topic)
   {
     return ImmutableList.of(
-        new ProducerRecord<>(topic, 0, null, JB("2008", "a", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2009", "b", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2010", "c", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2011", "d", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2011", "e", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("246140482-04-24T15:36:27.903Z", "x", "z", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2008", "a", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2009", "b", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2010", "c", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2011", "d", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2011", "e", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("246140482-04-24T15:36:27.903Z", "x", "z", "10", "20.0", "1.0")),
         new ProducerRecord<>(topic, 0, null, StringUtils.toUtf8("unparseable")),
         new ProducerRecord<>(topic, 0, null, StringUtils.toUtf8("unparseable2")),
         new ProducerRecord<>(topic, 0, null, null),
-        new ProducerRecord<>(topic, 0, null, JB("2013", "f", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2049", "f", "y", "notanumber", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2049", "f", "y", "10", "notanumber", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2049", "f", "y", "10", "20.0", "notanumber")),
-        new ProducerRecord<>(topic, 1, null, JB("2012", "g", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 1, null, JB("2011", "h", "y", "10", "20.0", "1.0"))
+        new ProducerRecord<>(topic, 0, null, jb("2013", "f", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2049", "f", "y", "notanumber", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2049", "f", "y", "10", "notanumber", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2049", "f", "y", "10", "20.0", "notanumber")),
+        new ProducerRecord<>(topic, 1, null, jb("2012", "g", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 1, null, jb("2011", "h", "y", "10", "20.0", "1.0"))
     );
   }
 
   private static List<ProducerRecord<byte[], byte[]>> generateSinglePartitionRecords(String topic)
   {
     return ImmutableList.of(
-        new ProducerRecord<>(topic, 0, null, JB("2008", "a", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2009", "b", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2010", "c", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2011", "d", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2011", "D", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2012", "e", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2009", "B", "y", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2008", "A", "x", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2009", "B", "x", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2010", "C", "x", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2011", "D", "x", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2011", "d", "x", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2012", "E", "x", "10", "20.0", "1.0")),
-        new ProducerRecord<>(topic, 0, null, JB("2009", "b", "x", "10", "20.0", "1.0"))
+        new ProducerRecord<>(topic, 0, null, jb("2008", "a", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2009", "b", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2010", "c", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2011", "d", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2011", "D", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2012", "e", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2009", "B", "y", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2008", "A", "x", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2009", "B", "x", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2010", "C", "x", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2011", "D", "x", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2011", "d", "x", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2012", "E", "x", "10", "20.0", "1.0")),
+        new ProducerRecord<>(topic, 0, null, jb("2009", "b", "x", "10", "20.0", "1.0"))
     );
   }
 
@@ -434,8 +433,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
@@ -484,8 +483,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
@@ -576,13 +575,13 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(1, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2008/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2009/P1D", 0);
-    SegmentDescriptor desc3 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc4 = SD(task, "2011/P1D", 0);
-    SegmentDescriptor desc5 = SD(task, "2011/P1D", 1);
-    SegmentDescriptor desc6 = SD(task, "2012/P1D", 0);
-    SegmentDescriptor desc7 = SD(task, "2013/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2008/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2009/P1D", 0);
+    SegmentDescriptor desc3 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc4 = sd(task, "2011/P1D", 0);
+    SegmentDescriptor desc5 = sd(task, "2011/P1D", 1);
+    SegmentDescriptor desc6 = sd(task, "2012/P1D", 0);
+    SegmentDescriptor desc7 = sd(task, "2013/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2, desc3, desc4, desc5, desc6, desc7), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(
@@ -723,13 +722,13 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(1, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2008/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2009/P1D", 0);
-    SegmentDescriptor desc3 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc4 = SD(task, "2011/P1D", 0);
-    SegmentDescriptor desc5 = SD(task, "2011/P1D", 1);
-    SegmentDescriptor desc6 = SD(task, "2012/P1D", 0);
-    SegmentDescriptor desc7 = SD(task, "2013/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2008/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2009/P1D", 0);
+    SegmentDescriptor desc3 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc4 = sd(task, "2011/P1D", 0);
+    SegmentDescriptor desc5 = sd(task, "2011/P1D", 1);
+    SegmentDescriptor desc6 = sd(task, "2012/P1D", 0);
+    SegmentDescriptor desc7 = sd(task, "2013/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2, desc3, desc4, desc5, desc6, desc7), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(
@@ -832,8 +831,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2008/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2009/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2008/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2009/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(
@@ -995,8 +994,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(2, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
@@ -1045,9 +1044,9 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(2, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2008/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2009/P1D", 0);
-    SegmentDescriptor desc3 = SD(task, "2010/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2008/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2009/P1D", 0);
+    SegmentDescriptor desc3 = sd(task, "2010/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2, desc3), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
@@ -1105,7 +1104,7 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(4, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2009/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2009/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
@@ -1186,8 +1185,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
@@ -1234,8 +1233,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(
@@ -1331,10 +1330,10 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(1, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2011/P1D", 0);
-    SegmentDescriptor desc3 = SD(task, "2013/P1D", 0);
-    SegmentDescriptor desc4 = SD(task, "2049/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2011/P1D", 0);
+    SegmentDescriptor desc3 = sd(task, "2013/P1D", 0);
+    SegmentDescriptor desc4 = sd(task, "2049/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2, desc3, desc4), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 13L))),
@@ -1487,8 +1486,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task2.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published segments & metadata
-    SegmentDescriptor desc1 = SD(task1, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task1, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task1, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task1, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
@@ -1552,8 +1551,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(1, task2.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published segments & metadata, should all be from the first task
-    SegmentDescriptor desc1 = SD(task1, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task1, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task1, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task1, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
@@ -1605,8 +1604,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(TaskState.SUCCESS, future1.get().getStatusCode());
 
     // Check published segments & metadata
-    SegmentDescriptor desc1 = SD(task1, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task1, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task1, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task1, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertNull(metadataStorageCoordinator.getDataSourceMetadata(DATA_SCHEMA.getDataSource()));
 
@@ -1623,8 +1622,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(1, task2.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published segments & metadata
-    SegmentDescriptor desc3 = SD(task2, "2011/P1D", 1);
-    SegmentDescriptor desc4 = SD(task2, "2013/P1D", 0);
+    SegmentDescriptor desc3 = sd(task2, "2011/P1D", 1);
+    SegmentDescriptor desc4 = sd(task2, "2013/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2, desc3, desc4), publishedDescriptors());
     Assert.assertNull(metadataStorageCoordinator.getDataSourceMetadata(DATA_SCHEMA.getDataSource()));
 
@@ -1667,11 +1666,11 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published segments & metadata
-    SegmentDescriptor desc1 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2011/P1D", 0);
     // desc3 will not be created in KafkaIndexTask (0.12.x) as it does not create per Kafka partition Druid segments
-    SegmentDescriptor desc3 = SD(task, "2011/P1D", 1);
-    SegmentDescriptor desc4 = SD(task, "2012/P1D", 0);
+    SegmentDescriptor desc3 = sd(task, "2011/P1D", 1);
+    SegmentDescriptor desc4 = sd(task, "2012/P1D", 0);
     Assert.assertEquals(isIncrementalHandoffSupported
                         ? ImmutableSet.of(desc1, desc2, desc4)
                         : ImmutableSet.of(desc1, desc2, desc3, desc4), publishedDescriptors());
@@ -1748,9 +1747,9 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task2.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published segments & metadata
-    SegmentDescriptor desc1 = SD(task1, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task1, "2011/P1D", 0);
-    SegmentDescriptor desc3 = SD(task2, "2012/P1D", 0);
+    SegmentDescriptor desc1 = sd(task1, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task1, "2011/P1D", 0);
+    SegmentDescriptor desc3 = sd(task2, "2012/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2, desc3), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(
@@ -1774,7 +1773,7 @@ public class KafkaIndexTaskTest
             0,
             "sequence0",
             new SeekableStreamStartSequenceNumbers<>(topic, ImmutableMap.of(0, 2L), ImmutableSet.of()),
-            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L)),
+            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 6L)),
             kafkaServer.consumerProperties(),
             KafkaSupervisorIOConfig.DEFAULT_POLL_TIMEOUT_MILLIS,
             true,
@@ -1814,7 +1813,7 @@ public class KafkaIndexTaskTest
             0,
             "sequence0",
             new SeekableStreamStartSequenceNumbers<>(topic, ImmutableMap.of(0, 2L), ImmutableSet.of()),
-            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L)),
+            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 6L)),
             kafkaServer.consumerProperties(),
             KafkaSupervisorIOConfig.DEFAULT_POLL_TIMEOUT_MILLIS,
             true,
@@ -1848,11 +1847,11 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task2.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published segments & metadata
-    SegmentDescriptor desc1 = SD(task1, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task1, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task1, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task1, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
-        new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
+        new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 6L))),
         metadataStorageCoordinator.getDataSourceMetadata(DATA_SCHEMA.getDataSource())
     );
 
@@ -1879,7 +1878,7 @@ public class KafkaIndexTaskTest
             0,
             "sequence0",
             new SeekableStreamStartSequenceNumbers<>(topic, ImmutableMap.of(0, 0L), ImmutableSet.of()),
-            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 9L)),
+            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 10L)),
             consumerProps,
             KafkaSupervisorIOConfig.DEFAULT_POLL_TIMEOUT_MILLIS,
             true,
@@ -1891,7 +1890,7 @@ public class KafkaIndexTaskTest
     final SeekableStreamStartSequenceNumbers<Integer, Long> checkpoint = new SeekableStreamStartSequenceNumbers<>(
         topic,
         ImmutableMap.of(0, 5L),
-        ImmutableSet.of()
+        ImmutableSet.of(0)
     );
 
     final ListenableFuture<TaskStatus> future1 = runTask(task1);
@@ -1927,7 +1926,7 @@ public class KafkaIndexTaskTest
             0,
             "sequence0",
             new SeekableStreamStartSequenceNumbers<>(topic, ImmutableMap.of(0, 0L), ImmutableSet.of()),
-            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 9L)),
+            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 10L)),
             consumerProps,
             KafkaSupervisorIOConfig.DEFAULT_POLL_TIMEOUT_MILLIS,
             true,
@@ -1941,9 +1940,12 @@ public class KafkaIndexTaskTest
 
     // Insert remaining data
     try (final KafkaProducer<byte[], byte[]> kafkaProducer = kafkaServer.newProducer()) {
+      kafkaProducer.initTransactions();
+      kafkaProducer.beginTransaction();
       for (ProducerRecord<byte[], byte[]> record : Iterables.skip(records, 5)) {
         kafkaProducer.send(record).get();
       }
+      kafkaProducer.commitTransaction();
     }
 
     // Wait for task to exit
@@ -1958,16 +1960,16 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task2.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published segments & metadata
-    SegmentDescriptor desc1 = SD(task1, "2008/P1D", 0);
-    SegmentDescriptor desc2 = SD(task1, "2008/P1D", 1);
-    SegmentDescriptor desc3 = SD(task1, "2009/P1D", 0);
-    SegmentDescriptor desc4 = SD(task1, "2009/P1D", 1);
-    SegmentDescriptor desc5 = SD(task1, "2010/P1D", 0);
-    SegmentDescriptor desc6 = SD(task1, "2011/P1D", 0);
-    SegmentDescriptor desc7 = SD(task1, "2012/P1D", 0);
+    SegmentDescriptor desc1 = sd(task1, "2008/P1D", 0);
+    SegmentDescriptor desc2 = sd(task1, "2008/P1D", 1);
+    SegmentDescriptor desc3 = sd(task1, "2009/P1D", 0);
+    SegmentDescriptor desc4 = sd(task1, "2009/P1D", 1);
+    SegmentDescriptor desc5 = sd(task1, "2010/P1D", 0);
+    SegmentDescriptor desc6 = sd(task1, "2011/P1D", 0);
+    SegmentDescriptor desc7 = sd(task1, "2012/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2, desc3, desc4, desc5, desc6, desc7), publishedDescriptors());
     Assert.assertEquals(
-        new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 9L))),
+        new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 10L))),
         metadataStorageCoordinator.getDataSourceMetadata(DATA_SCHEMA.getDataSource())
     );
   }
@@ -1981,7 +1983,7 @@ public class KafkaIndexTaskTest
             0,
             "sequence0",
             new SeekableStreamStartSequenceNumbers<>(topic, ImmutableMap.of(0, 2L), ImmutableSet.of()),
-            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L)),
+            new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 6L)),
             kafkaServer.consumerProperties(),
             KafkaSupervisorIOConfig.DEFAULT_POLL_TIMEOUT_MILLIS,
             true,
@@ -2048,11 +2050,11 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
-        new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
+        new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 6L))),
         metadataStorageCoordinator.getDataSourceMetadata(DATA_SCHEMA.getDataSource())
     );
 
@@ -2177,8 +2179,8 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(0, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2010/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2011/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2010/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2011/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 5L))),
@@ -2318,10 +2320,10 @@ public class KafkaIndexTaskTest
     Assert.assertEquals(1, task.getRunner().getRowIngestionMeters().getThrownAway());
 
     // Check published metadata
-    SegmentDescriptor desc1 = SD(task, "2008/P1D", 0);
-    SegmentDescriptor desc2 = SD(task, "2009/P1D", 0);
-    SegmentDescriptor desc3 = SD(task, "2013/P1D", 0);
-    SegmentDescriptor desc4 = SD(task, "2049/P1D", 0);
+    SegmentDescriptor desc1 = sd(task, "2008/P1D", 0);
+    SegmentDescriptor desc2 = sd(task, "2009/P1D", 0);
+    SegmentDescriptor desc3 = sd(task, "2013/P1D", 0);
+    SegmentDescriptor desc4 = sd(task, "2049/P1D", 0);
     Assert.assertEquals(ImmutableSet.of(desc1, desc2, desc3, desc4), publishedDescriptors());
     Assert.assertEquals(
         new KafkaDataSourceMetadata(new SeekableStreamEndSequenceNumbers<>(topic, ImmutableMap.of(0, 13L))),
@@ -2834,7 +2836,7 @@ public class KafkaIndexTaskTest
     return results.isEmpty() ? 0L : DimensionHandlerUtils.nullToZero(results.get(0).getValue().getLongMetric("rows"));
   }
 
-  private static byte[] JB(String timestamp, String dim1, String dim2, String dimLong, String dimFloat, String met1)
+  private static byte[] jb(String timestamp, String dim1, String dim2, String dimLong, String dimFloat, String met1)
   {
     try {
       return new ObjectMapper().writeValueAsBytes(
@@ -2849,11 +2851,11 @@ public class KafkaIndexTaskTest
       );
     }
     catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
-  private SegmentDescriptor SD(final Task task, final String intervalString, final int partitionNum)
+  private SegmentDescriptor sd(final Task task, final String intervalString, final int partitionNum)
   {
     final Interval interval = Intervals.of(intervalString);
     return new SegmentDescriptor(interval, getLock(task, interval).getVersion(), partitionNum);
