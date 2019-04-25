@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package io.druid.emitter.influxdb;
+package org.apache.druid.emitter.influxdb;
 
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.druid.jackson.DefaultObjectMapper;
+import org.apache.druid.jackson.DefaultObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

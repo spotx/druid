@@ -17,13 +17,13 @@
  * under the License.
  */
 
-package io.druid.emitter.influxdb;
+package org.apache.druid.emitter.influxdb;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.common.collect.ImmutableSet;
-import io.druid.java.util.emitter.core.Emitter;
-import io.druid.java.util.emitter.core.Event;
-import io.druid.java.util.emitter.service.ServiceMetricEvent;
+import org.apache.druid.java.util.emitter.core.Emitter;
+import org.apache.druid.java.util.emitter.core.Event;
+import org.apache.druid.java.util.emitter.service.ServiceMetricEvent;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,7 +32,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 
-import io.druid.java.util.common.logger.Logger;
+import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.entity.ContentType;
@@ -203,7 +203,7 @@ public class InfluxdbEmitter implements Emitter
   public void close() throws IOException
   {
     flush();
-    log.info("Closing emitter io.druid.emitter.influxdb.InfluxdbEmitter");
+    log.info("Closing emitter org.apache.druid.emitter.influxdb.InfluxdbEmitter");
     started.set(false);
     exec.shutdown();
   }

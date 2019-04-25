@@ -17,12 +17,12 @@
  * under the License.
  */
 
-package io.druid.emitter.influxdb;
+package org.apache.druid.emitter.influxdb;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
-import io.druid.java.util.common.logger.Logger;
+import org.apache.druid.java.util.common.logger.Logger;
 
 public class InfluxdbEmitterConfig
 {

@@ -17,22 +17,22 @@
  * under the License.
  */
 
-package io.druid.emitter.influxdb;
+package org.apache.druid.emitter.influxdb;
 
 import com.fasterxml.jackson.databind.Module;
 import com.google.inject.Binder;
-import io.druid.guice.JsonConfigProvider;
-import io.druid.initialization.DruidModule;
+import org.apache.druid.guice.JsonConfigProvider;
+import org.apache.druid.initialization.DruidModule;
 
 import java.util.Collections;
 import java.util.List;
 
-import io.druid.java.util.common.logger.Logger;
+import org.apache.druid.java.util.common.logger.Logger;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
-import io.druid.guice.ManageLifecycle;
+import org.apache.druid.guice.ManageLifecycle;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.druid.java.util.emitter.core.Emitter;
+import org.apache.druid.java.util.emitter.core.Emitter;
 
 public class InfluxdbEmitterModule implements DruidModule
 {
