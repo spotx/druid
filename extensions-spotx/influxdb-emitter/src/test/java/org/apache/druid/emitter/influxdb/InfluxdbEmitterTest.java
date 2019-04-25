@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.druid.java.util.emitter.service.ServiceEventBuilder;
 import org.apache.druid.java.util.emitter.service.ServiceMetricEvent;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,8 @@ public class InfluxdbEmitterTest
                                  10,
                                  30,
                                  10,
-                                 00); // 10:00am on 30/10/2017 = 1509357600000000000 in epoch nanoseconds
+                                 00,
+                                 DateTimeZone.UTC); // 10:00am on 30/10/2017 = 1509357600000000000 in epoch nanoseconds
     String metric = "metric/te/st/value";
     Number value = 1234;
     ImmutableMap<String, String> serviceDims = ImmutableMap.of(
@@ -85,7 +87,8 @@ public class InfluxdbEmitterTest
                                  10,
                                  30,
                                  10,
-                                 00); // 10:00am on 30/10/2017 = 1509357600000000000 in epoch nanoseconds
+                                 00,
+                                 DateTimeZone.UTC); // 10:00am on 30/10/2017 = 1509357600000000000 in epoch nanoseconds
     String metric = "metric/time";
     Number value = 1234;
     ImmutableMap<String, String> serviceDims = ImmutableMap.of(
