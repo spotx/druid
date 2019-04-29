@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 import org.apache.druid.discovery.DruidLeaderClient;
@@ -155,7 +154,7 @@ public class HttpIndexingServiceClient implements IndexingServiceClient
       return Preconditions.checkNotNull(taskId, "Null task id for task[%s]", taskObject);
     }
     catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -189,7 +188,7 @@ public class HttpIndexingServiceClient implements IndexingServiceClient
       return killedTaskId;
     }
     catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
