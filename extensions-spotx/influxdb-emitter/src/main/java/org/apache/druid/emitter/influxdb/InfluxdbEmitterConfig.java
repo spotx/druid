@@ -1,18 +1,18 @@
 /*
- * Licensed to Metamarkets Group Inc. (Metamarkets) under one
- * or more contributor license agreements. See the NOTICE file
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. Metamarkets licenses this file
+ * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -27,26 +27,26 @@ import org.apache.druid.java.util.common.logger.Logger;
 public class InfluxdbEmitterConfig
 {
 
-  private final static int DEFAULT_PORT = 8086;
-  private final static int DEFAULT_QUEUE_SIZE = Integer.MAX_VALUE;
-  private final static int DEFAULT_FLUSH_PERIOD = 60000; // milliseconds
+  private static final int DEFAULT_PORT = 8086;
+  private static final int DEFAULT_QUEUE_SIZE = Integer.MAX_VALUE;
+  private static final int DEFAULT_FLUSH_PERIOD = 60000; // milliseconds
 
   @JsonProperty
-  final private String hostname;
+  private final String hostname;
   @JsonProperty
-  final private Integer port;
+  private final Integer port;
   @JsonProperty
-  final private String databaseName;
+  private final String databaseName;
   @JsonProperty
-  final private Integer maxQueueSize;
+  private final Integer maxQueueSize;
   @JsonProperty
-  final private Integer flushPeriod;
+  private final Integer flushPeriod;
   @JsonProperty
-  final private Integer flushDelay;
+  private final Integer flushDelay;
   @JsonProperty
-  final private String influxdbUserName;
+  private final String influxdbUserName;
   @JsonProperty
-  final private String influxdbPassword;
+  private final String influxdbPassword;
 
 
   private static Logger log = new Logger(InfluxdbEmitterConfig.class);
