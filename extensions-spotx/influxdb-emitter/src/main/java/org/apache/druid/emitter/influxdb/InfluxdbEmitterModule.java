@@ -22,17 +22,16 @@ package org.apache.druid.emitter.influxdb;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Binder;
-import com.google.inject.name.Named;
 import com.google.inject.Provides;
-
-import java.util.Collections;
-import java.util.List;
-
+import com.google.inject.name.Named;
 import org.apache.druid.guice.JsonConfigProvider;
 import org.apache.druid.guice.ManageLifecycle;
 import org.apache.druid.initialization.DruidModule;
 import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.java.util.emitter.core.Emitter;
+
+import java.util.Collections;
+import java.util.List;
 
 public class InfluxdbEmitterModule implements DruidModule
 {
