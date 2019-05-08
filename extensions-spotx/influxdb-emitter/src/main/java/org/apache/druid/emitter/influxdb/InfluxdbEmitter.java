@@ -78,6 +78,7 @@ public class InfluxdbEmitter implements Emitter
     log.info("constructing influxdb emitter");
   }
 
+  @Override
   public void start()
   {
     synchronized (started) {
@@ -93,6 +94,7 @@ public class InfluxdbEmitter implements Emitter
     }
   }
 
+  @Override
   public void emit(Event event)
   {
     if (event instanceof ServiceMetricEvent) {
@@ -191,6 +193,7 @@ public class InfluxdbEmitter implements Emitter
     }
   }
 
+  @Override
   public void flush() throws IOException
   {
     if (started.get()) {
@@ -198,6 +201,7 @@ public class InfluxdbEmitter implements Emitter
     }
   }
 
+  @Override
   public void close() throws IOException
   {
     flush();
