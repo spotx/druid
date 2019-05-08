@@ -39,11 +39,13 @@ public class InfluxdbEmitterModule implements DruidModule
   private static final String EMITTER_TYPE = "influxdb";
   private static final Logger log = new Logger(InfluxdbEmitterModule.class);
 
+  @Override
   public List<? extends Module> getJacksonModules()
   {
     return Collections.EMPTY_LIST;
   }
 
+  @Override
   public void configure(Binder binder)
   {
     JsonConfigProvider.bind(binder, "druid.emitter." + EMITTER_TYPE, InfluxdbEmitterConfig.class);
