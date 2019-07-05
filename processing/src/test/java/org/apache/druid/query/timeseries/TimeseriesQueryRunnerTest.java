@@ -621,7 +621,7 @@ public class TimeseriesQueryRunnerTest
                                   .aggregators(
                                       Arrays.asList(
                                           QueryRunnerTestHelper.ROWS_COUNT,
-                                          new LongSumAggregatorFactory("idx", "expr"),
+                                          new LongSumAggregatorFactory("idx", null, "expr", TestExprMacroTable.INSTANCE),
                                           QueryRunnerTestHelper.QUALITY_UNIQUES
                                       )
                                   )

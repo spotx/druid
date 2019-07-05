@@ -704,6 +704,18 @@ public abstract class ExprEval<T>
 
     @Nullable
     @Override
+    public long asLong()
+    {
+      Long[] longvalues = this.asLongArray();
+
+      if (longvalues.length == 1) {
+        return longvalues[0];
+      }
+      return 0;
+    }
+
+    @Nullable
+    @Override
     public Double[] asDoubleArray()
     {
       return value;
@@ -769,6 +781,8 @@ public abstract class ExprEval<T>
       }
       return longValues;
     }
+
+
 
     @Nullable
     @Override
