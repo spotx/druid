@@ -161,6 +161,8 @@
                                         <argument>-c</argument>
                                         <argument>org.apache.druid.extensions:druid-bloom-filter</argument>
                                         <argument>-c</argument>
+                                        <argument>org.apache.druid.extensions:druid-influxdb-emitter</argument>
+                                        <argument>-c</argument>
                                         <argument>org.apache.druid.extensions:druid-datasketches</argument>
                                         <argument>-c</argument>
                                         <argument>org.apache.druid.extensions:druid-hdfs-storage</argument>
