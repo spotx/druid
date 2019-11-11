@@ -87,6 +87,14 @@ public class CheckPointDataSourceMetadataAction implements TaskAction<Boolean>
     return checkpointMetadata;
   }
 
+  // For backwards compatibility
+  @Deprecated
+  @JsonProperty
+  public SeekableStreamDataSourceMetadata getCurrentCheckPoint()
+  {
+    return checkpointMetadata;
+  }
+
   @JsonProperty
   public SeekableStreamDataSourceMetadata getCheckpointMetadata()
   {
@@ -128,4 +136,5 @@ public class CheckPointDataSourceMetadataAction implements TaskAction<Boolean>
            ", checkpointMetadata=" + checkpointMetadata +
            '}';
   }
+
 }
