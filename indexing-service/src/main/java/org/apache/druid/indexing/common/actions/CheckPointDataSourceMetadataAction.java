@@ -32,23 +32,18 @@ import java.util.Objects;
 public class CheckPointDataSourceMetadataAction implements TaskAction<Boolean>
 {
   private final String supervisorId;
-  @Nullable
-  private final Integer taskGroupId;
-  @Deprecated
-  private final String baseSequenceName;
+  private final int taskGroupId;
   private final SeekableStreamDataSourceMetadata checkpointMetadata;
 
   public CheckPointDataSourceMetadataAction(
       @JsonProperty("supervisorId") String supervisorId,
-      @JsonProperty("taskGroupId") @Nullable Integer taskGroupId, // nullable for backward compatibility,
-      @JsonProperty("sequenceName") @Deprecated String baseSequenceName, // old version would use this
+      @JsonProperty("taskGroupId") Integer taskGroupId,
       @JsonProperty("previousCheckPoint") @Nullable @Deprecated SeekableStreamDataSourceMetadata previousCheckPoint,
       @JsonProperty("checkpointMetadata") @Nullable SeekableStreamDataSourceMetadata checkpointMetadata
   )
   {
     this.supervisorId = Preconditions.checkNotNull(supervisorId, "supervisorId");
-    this.taskGroupId = taskGroupId;
-    this.baseSequenceName = Preconditions.checkNotNull(baseSequenceName, "sequenceName");
+    this.taskGroupId = Preconditions.checkNotNull(taskGroupId, "taskGroupId");
     this.checkpointMetadata = checkpointMetadata == null ? previousCheckPoint : checkpointMetadata;
 
     Preconditions.checkNotNull(this.checkpointMetadata, "checkpointMetadata");
@@ -64,13 +59,6 @@ public class CheckPointDataSourceMetadataAction implements TaskAction<Boolean>
   public String getSupervisorId()
   {
     return supervisorId;
-  }
-
-  @Deprecated
-  @JsonProperty("sequenceName")
-  public String getBaseSequenceName()
-  {
-    return baseSequenceName;
   }
 
   @Nullable
@@ -94,6 +82,20 @@ public class CheckPointDataSourceMetadataAction implements TaskAction<Boolean>
     return checkpointMetadata;
   }
 
+  /**
+   * This method is for backwards compatibility to add the missing property (sequenceName) in serialized JSON,
+   * so rolling-updates from older versions are compatible, a dummy value is returned since the value is not
+   * used in any production code as long as the json property is present
+   *
+   * TODO : this should be removed when we don't need rolling-update compatibility with version 0.15 or earlier anymore
+   *
+   * @return dummy value
+   */
+  @JsonProperty("sequenceName")
+  private String getBaseSequenceName()
+  {
+    return "dummy";
+  }
 
   @JsonProperty
   public SeekableStreamDataSourceMetadata getCheckpointMetadata()
@@ -115,7 +117,6 @@ public class CheckPointDataSourceMetadataAction implements TaskAction<Boolean>
     return toolbox.getSupervisorManager().checkPointDataSourceMetadata(
         supervisorId,
         taskGroupId,
-        baseSequenceName,
         checkpointMetadata
     );
   }
@@ -131,7 +132,6 @@ public class CheckPointDataSourceMetadataAction implements TaskAction<Boolean>
   {
     return "CheckPointDataSourceMetadataAction{" +
            "supervisorId='" + supervisorId + '\'' +
-           ", baseSequenceName='" + baseSequenceName + '\'' +
            ", taskGroupId='" + taskGroupId + '\'' +
            ", checkpointMetadata=" + checkpointMetadata +
            '}';
