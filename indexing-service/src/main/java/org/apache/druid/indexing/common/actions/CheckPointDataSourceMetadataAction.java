@@ -66,13 +66,6 @@ public class CheckPointDataSourceMetadataAction implements TaskAction<Boolean>
     return supervisorId;
   }
 
-  @Deprecated
-  @JsonProperty("sequenceName")
-  public String getBaseSequenceName()
-  {
-    return baseSequenceName;
-  }
-
   @Nullable
   @JsonProperty
   public Integer getTaskGroupId()
