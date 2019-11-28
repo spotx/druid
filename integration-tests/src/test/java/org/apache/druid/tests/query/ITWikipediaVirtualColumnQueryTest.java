@@ -34,7 +34,7 @@ import java.util.concurrent.Callable;
 public class ITWikipediaVirtualColumnQueryTest
 {
   private static final String WIKIPEDIA_DATA_SOURCE = "wikipedia_editstream";
-  private static final String WIKIPEDIA_QUERIES_RESOURCE = "/queries/wikipedia_editstream_queries.json";
+  private static final String WIKIPEDIA_QUERIES_RESOURCE = "/queries/virtual_column_query.json";
   @Inject
   private CoordinatorResourceTestClient coordinatorClient;
   @Inject
