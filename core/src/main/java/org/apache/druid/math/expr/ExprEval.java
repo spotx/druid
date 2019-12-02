@@ -636,7 +636,7 @@ public abstract class ExprEval<T>
       Long[] longvalues = this.asLongArray();
 
       if (longvalues.length == 1) {
-        return longvalues[0];
+        return longvalues[0] == null ? 0 : longvalues[0];
       }
       return 0;
     }
@@ -645,10 +645,10 @@ public abstract class ExprEval<T>
     @Override
     public double asDouble()
     {
-      Double[] longvalues = this.asDoubleArray();
+      Double[] doublevalues = this.asDoubleArray();
 
-      if (longvalues.length == 1) {
-        return longvalues[0];
+      if (doublevalues.length == 1) {
+        return doublevalues[0] == null ? 0 : doublevalues[0];
       }
       return 0;
     }
@@ -719,7 +719,7 @@ public abstract class ExprEval<T>
       Long[] longvalues = this.asLongArray();
 
       if (longvalues.length == 1) {
-        return longvalues[0];
+        return longvalues[0] == null ? 0 : longvalues[0];
       }
       return 0;
     }
@@ -728,8 +728,9 @@ public abstract class ExprEval<T>
     @Override
     public double asDouble()
     {
-      if (value.length == 1) {
-        return value[0];
+      Double[] doublevalues = this.asDoubleArray();
+      if (doublevalues.length == 1) {
+        return doublevalues[0] == null ? 0 : doublevalues[0];
       }
       return 0;
     }
@@ -800,29 +801,6 @@ public abstract class ExprEval<T>
 
     @Nullable
     @Override
-    public long asLong()
-    {
-      Long[] longvalues = this.asLongArray();
-
-      if (longvalues.length == 1) {
-        return longvalues[0];
-      }
-      return 0;
-    }
-
-    @Nullable
-    @Override
-    public double asDouble()
-    {
-      Double[] doublevalues = this.asDoubleArray();
-
-      if (doublevalues.length == 1) {
-        return doublevalues[0];
-      }
-      return 0;
-    }
-    @Nullable
-    @Override
     public String[] asStringArray()
     {
       return value;
@@ -838,8 +816,6 @@ public abstract class ExprEval<T>
       }
       return longValues;
     }
-
-
 
     @Nullable
     @Override
