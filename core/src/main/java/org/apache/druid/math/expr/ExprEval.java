@@ -631,6 +631,30 @@ public abstract class ExprEval<T>
 
     @Nullable
     @Override
+    public long asLong()
+    {
+      Long[] longvalues = this.asLongArray();
+
+      if (longvalues.length == 1) {
+        return longvalues[0];
+      }
+      return 0;
+    }
+
+    @Nullable
+    @Override
+    public double asDouble()
+    {
+      Double[] longvalues = this.asDoubleArray();
+
+      if (longvalues.length == 1) {
+        return longvalues[0];
+      }
+      return 0;
+    }
+
+    @Nullable
+    @Override
     public String[] asStringArray()
     {
       return value == null ? null : Arrays.stream(value).map(x -> x != null ? x.toString() : null).toArray(String[]::new);
@@ -690,6 +714,28 @@ public abstract class ExprEval<T>
 
     @Nullable
     @Override
+    public long asLong()
+    {
+      Long[] longvalues = this.asLongArray();
+
+      if (longvalues.length == 1) {
+        return longvalues[0];
+      }
+      return 0;
+    }
+
+    @Nullable
+    @Override
+    public double asDouble()
+    {
+      if (value.length == 1) {
+        return value[0];
+      }
+      return 0;
+    }
+
+    @Nullable
+    @Override
     public String[] asStringArray()
     {
       return value == null ? null : Arrays.stream(value).map(x -> x != null ? x.toString() : null).toArray(String[]::new);
@@ -700,18 +746,6 @@ public abstract class ExprEval<T>
     public Long[] asLongArray()
     {
       return value == null ? null : Arrays.stream(value).map(Double::longValue).toArray(Long[]::new);
-    }
-
-    @Nullable
-    @Override
-    public long asLong()
-    {
-      Long[] longvalues = this.asLongArray();
-
-      if (longvalues.length == 1) {
-        return longvalues[0];
-      }
-      return 0;
     }
 
     @Nullable
@@ -764,6 +798,29 @@ public abstract class ExprEval<T>
       return ExprType.STRING_ARRAY;
     }
 
+    @Nullable
+    @Override
+    public long asLong()
+    {
+      Long[] longvalues = this.asLongArray();
+
+      if (longvalues.length == 1) {
+        return longvalues[0];
+      }
+      return 0;
+    }
+
+    @Nullable
+    @Override
+    public double asDouble()
+    {
+      Double[] doublevalues = this.asDoubleArray();
+
+      if (doublevalues.length == 1) {
+        return doublevalues[0];
+      }
+      return 0;
+    }
     @Nullable
     @Override
     public String[] asStringArray()

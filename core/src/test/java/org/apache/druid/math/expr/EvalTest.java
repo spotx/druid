@@ -173,4 +173,18 @@ public class EvalTest
     Assert.assertFalse(eval.asBoolean());
     Assert.assertEquals(ExprType.DOUBLE, eval.type());
   }
+
+  @Test
+  public void testSingletonArrayEval()
+  {
+    Expr.ObjectBinding bindings = Parser.withMap(ImmutableMap.of("x", 0));
+
+    Assert.assertEquals(2888L, eval("Array(parse_long(2888))",bindings).asLong());
+    Assert.assertEquals(2888L, eval("Array(2888.0)", bindings).asLong());
+    Assert.assertEquals(2888L, eval("Array('2888')",bindings).asLong());
+
+    Assert.assertEquals(2888.0, eval("Array(parse_long(2888))", bindings).asDouble(),0.0001);
+    Assert.assertEquals(2888.0, eval("Array(2888.0)", bindings).asDouble(), 0.0001);
+    Assert.assertEquals(2888.0, eval("Array('2888.0')",bindings).asDouble(),0.0001);
+  }
 }

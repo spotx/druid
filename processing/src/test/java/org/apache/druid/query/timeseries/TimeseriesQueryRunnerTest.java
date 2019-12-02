@@ -621,7 +621,8 @@ public class TimeseriesQueryRunnerTest
                                   .aggregators(
                                       Arrays.asList(
                                           QueryRunnerTestHelper.ROWS_COUNT,
-                                          new LongSumAggregatorFactory("idx", null, "expr", TestExprMacroTable.INSTANCE),
+                                          new LongSumAggregatorFactory("idx", "expr"),
+                                          new LongSumAggregatorFactory("idx_expr", null, "expr", TestExprMacroTable.INSTANCE),
                                           QueryRunnerTestHelper.QUALITY_UNIQUES
                                       )
                                   )
@@ -641,13 +642,13 @@ public class TimeseriesQueryRunnerTest
         new Result<>(
             DateTimes.of("2011-04-01"),
             new TimeseriesResultValue(
-                ImmutableMap.of("rows", 13L, "idx", 6619L, "uniques", QueryRunnerTestHelper.UNIQUES_9)
+                ImmutableMap.of("rows", 13L, "idx", 6619L, "idx_expr", 6619L, "uniques", QueryRunnerTestHelper.UNIQUES_9)
             )
         ),
         new Result<>(
             DateTimes.of("2011-04-02"),
             new TimeseriesResultValue(
-                ImmutableMap.of("rows", 13L, "idx", 5827L, "uniques", QueryRunnerTestHelper.UNIQUES_9)
+                ImmutableMap.of("rows", 13L, "idx", 5827L, "idx_expr", 5827L, "uniques", QueryRunnerTestHelper.UNIQUES_9)
             )
         )
     );
