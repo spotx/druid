@@ -631,6 +631,30 @@ public abstract class ExprEval<T>
 
     @Nullable
     @Override
+    public long asLong()
+    {
+      Long[] longvalues = this.asLongArray();
+
+      if (longvalues.length == 1) {
+        return longvalues[0] == null ? 0 : longvalues[0];
+      }
+      return 0;
+    }
+
+    @Nullable
+    @Override
+    public double asDouble()
+    {
+      Double[] doublevalues = this.asDoubleArray();
+
+      if (doublevalues.length == 1) {
+        return doublevalues[0] == null ? 0 : doublevalues[0];
+      }
+      return 0;
+    }
+
+    @Nullable
+    @Override
     public String[] asStringArray()
     {
       return value == null ? null : Arrays.stream(value).map(x -> x != null ? x.toString() : null).toArray(String[]::new);
@@ -686,6 +710,29 @@ public abstract class ExprEval<T>
     public ExprType type()
     {
       return ExprType.DOUBLE_ARRAY;
+    }
+
+    @Nullable
+    @Override
+    public long asLong()
+    {
+      Long[] longvalues = this.asLongArray();
+
+      if (longvalues.length == 1) {
+        return longvalues[0] == null ? 0 : longvalues[0];
+      }
+      return 0;
+    }
+
+    @Nullable
+    @Override
+    public double asDouble()
+    {
+      Double[] doublevalues = this.asDoubleArray();
+      if (doublevalues.length == 1) {
+        return doublevalues[0] == null ? 0 : doublevalues[0];
+      }
+      return 0;
     }
 
     @Nullable

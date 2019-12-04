@@ -105,7 +105,7 @@ public class ExpressionVirtualColumn implements VirtualColumn
   @Override
   public ColumnCapabilities capabilities(String columnName)
   {
-    return new ColumnCapabilitiesImpl().setType(outputType);
+    return new ColumnCapabilitiesImpl().setType(outputType).setHasMultipleValues(true);
   }
 
   @Override

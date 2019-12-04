@@ -1299,5 +1299,42 @@
                 ]
             }
         ]
+    },
+    {
+        "description": "timeseries, agg from expression from virtual column",
+        "query": {
+            "queryType": "timeseries",
+            "dataSource": "wikipedia_editstream",
+            "intervals": ["2013-01-01T00:00:00.000/2013-01-08T00:00:00.000"],
+            "granularity": "all",
+            "aggregations": [
+                {
+                    "type": "longSum",
+                    "name": "count_from_fieldName",
+                    "fieldName" : "count_expression"
+                },
+                {
+                    "type": "longSum",
+                    "name": "count_from_expression",
+                    "expression" : "count_expression"
+                }
+            ],
+            "virtualColumns" : [
+                { "name" : "count_expression",
+                    "expression" : "count",
+                    "type" : "expression"
+                }
+            ]
+        },
+        "expectedResults": [
+            {
+                "timestamp": "2013-01-01T00:00:00.000Z",
+                "result": {
+                    "count_from_fieldName": 2815650,
+                    "count_from_expression": 2815650
+                }
+            }
+        ]
     }
+
 ]
