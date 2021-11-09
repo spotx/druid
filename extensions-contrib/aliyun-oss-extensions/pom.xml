@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.apache.druid</groupId>
     <artifactId>druid</artifactId>
-    <version>0.22.0</version>
+    <version>spotx-0.22.0</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   
