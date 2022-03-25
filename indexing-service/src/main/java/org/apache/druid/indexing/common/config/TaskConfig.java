@@ -44,7 +44,7 @@ public class TaskConfig
   private static final Logger log = new Logger(TaskConfig.class);
 
   public static final List<String> DEFAULT_DEFAULT_HADOOP_COORDINATES = ImmutableList.of(
-      "org.apache.hadoop:hadoop-client:3.0.0"
+      "org.apache.hadoop:hadoop-client:2.8.5"
   );
 
   // This enum controls processing mode of batch ingestion "segment creation" phase (i.e. appenderator logic)
